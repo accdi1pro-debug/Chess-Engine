@@ -1,6 +1,6 @@
 public class Board{
     //board for each white pieces 
-    public static long whitePawns = 0x0000_0000_0000_ff00L ;
+    public static long whitePawns = 0x0000_0100_0001_ff00L ;
     public static long whiteBishops = 0x0000_0000_0000_0024L ;
     public static long whiteKnights = 0x0000_0000_0000_0042L ;
     public static long whiteRoocks = 0x0000_0000_0000_0081L ;
@@ -15,7 +15,7 @@ public class Board{
     public static long blackQueen = 0x0800_0000_0000_0000L ;
     public static long blackKing = 0x1000_0000_0000_0000L ;
 
-    public static long atackSquares = 0x1000_0000_0f00_0000L ;
+    public static long atackSquares = 0x0000_0000_0000_0000L ;
 
     //boards for each combined pieces by color
     public static long whiteBoard;

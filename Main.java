@@ -22,7 +22,7 @@ public class Main extends JPanel implements ActionListener  {
 
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Mine Sweeper");
+        JFrame frame = new JFrame("Chess");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // Create an instance of your custom class
@@ -48,9 +48,18 @@ public class Main extends JPanel implements ActionListener  {
                     int column = (int) Math.floor(-newX/100);
 
                     int posInAray = row * 8 + column;
+                    
+                    // First show attack squares for the clicked piece
+                    new MovementFuncion().showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);
+                    
+                    // Then check if a move was selected and execute it
+                    if (Board.atackSquares != 0) {
+                        System.out.println("Moving to position: " + posInAray);
+                        new MovementFuncion().movePiece(posInAray);
+                    }
 
-
-                    System.out.println(posInAray);
+                    
+                    //System.out.println(posInAray);
 
                 }
             }
@@ -88,6 +97,7 @@ public class Main extends JPanel implements ActionListener  {
                 int araypos =63 -( (c)*8 + r);
 
                 if (((Board.atackSquares >>> araypos) & 1L) != 0){a = 160;}else{a=255;}
+
                 if (r %2 ==0){
                     g.setColor(new Color(119, 149, 86,a));
                     if (c %2 ==0){
@@ -102,13 +112,12 @@ public class Main extends JPanel implements ActionListener  {
                 }
 
                 
-                
                 g.fillRect(r*100 +100, c *100 +100, 100, 100);
 
                 
                 g.setColor(new Color(0,0,0));
 
-                g.drawString(String.valueOf(araypos), (r ) *100 +100, (c ) * 100 +100 );
+                g.drawString(String.valueOf(araypos), (r ) *100 +100, (c ) * 100 + 200);
             }
         }
         int count = 0;
@@ -177,6 +186,51 @@ public class Main extends JPanel implements ActionListener  {
         if (((Board.blackKing >>> i) & 1L) != 0) {
             g.drawImage(blackKing, x, y, 100, 100, this);
         }
+    }
+
+    public String returnPiece(int i ){
+
+        if (((Board.whitePawns >>> i) & 1L) != 0) {
+            return "WP";
+        }
+        if (((Board.whiteBishops >>> i) & 1L) != 0) {
+            return "WB";
+        }
+        if (((Board.whiteRoocks >>> i) & 1L) != 0) {
+            return "WR";
+        }
+        if (((Board.whiteKnights >>> i) & 1L) != 0) {
+            return "WKN";
+        }
+        if (((Board.whiteQueen >>> i) & 1L) != 0) {
+            return "WQ";
+        }
+        if (((Board.whiteKing >>> i) & 1L) != 0) {
+            return "WK";
+        }
+    
+        
+
+        if (((Board.blackPawns >>> i) & 1L) != 0) {
+            return "BP";
+        }
+        if (((Board.blackBishops >>> i) & 1L) != 0) {
+            return "BB";
+        }
+        if (((Board.blackRoocks >>> i) & 1L) != 0) {
+            return "BR";
+        }
+        if (((Board.blackKnights >>> i) & 1L) != 0) {
+            return "BKN";
+        }
+        if (((Board.blackQueen >>> i) & 1L) != 0) {
+            return "BQ";
+        }
+        if (((Board.blackKing >>> i) & 1L) != 0) {
+            return "BK";
+        }
+        
+        return "";
     }
 
 }
