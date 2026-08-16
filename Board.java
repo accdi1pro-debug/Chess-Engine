@@ -15,6 +15,8 @@ public class Board{
     public static long blackQueen = 0x0800_0000_0000_0000L ;
     public static long blackKing = 0x1000_0000_0000_0000L ;
 
+    public static long atackSquares = 0x1000_0000_0f00_0000L ;
+
     //boards for each combined pieces by color
     public static long whiteBoard;
     public static long blackBoard;

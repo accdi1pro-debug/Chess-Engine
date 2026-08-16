@@ -28,11 +28,39 @@ public class Main extends JPanel implements ActionListener  {
         // Create an instance of your custom class
         Main gamePanel = new Main();
         
+        gamePanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                float x = e.getX();
+                float y = e.getY();
+
+                float newX = x -900;
+                float newY = y -900;
+
+                if ((x>900 || y>900 )||(x<100 ||y<100)){
+
+                    System.out.println("out of bound");
+
+                }else{
+
+                    int row = (int) Math.floor(-newY/100);
+
+                    int column = (int) Math.floor(-newX/100);
+
+                    int posInAray = row * 8 + column;
+
+
+                    System.out.println(posInAray);
+
+                }
+            }
+        });
         frame.add(gamePanel);
         frame.pack(); // Shrinks the window perfectly around your 600x600 panel
         frame.setLocationRelativeTo(null); // Centers the window on your screen
         frame.setVisible(true);
-        gamePanel.setBackground(Color.BLUE);
+        gamePanel.setBackground(Color.DARK_GRAY);
+
         
     }
 
@@ -56,20 +84,31 @@ public class Main extends JPanel implements ActionListener  {
         super.paintComponent(g); // Clears the screen
         for (int c = 0; c < 8; c++) {
             for (int r = 0; r < 8; r++) {
+                int a = 0;
+                int araypos =63 -( (c)*8 + r);
+
+                if (((Board.atackSquares >>> araypos) & 1L) != 0){a = 160;}else{a=255;}
                 if (r %2 ==0){
-                    g.setColor(new Color(119, 149, 86));
+                    g.setColor(new Color(119, 149, 86,a));
                     if (c %2 ==0){
-                        g.setColor(new Color(235, 236, 208));
+                        g.setColor(new Color(235, 236, 208,a));
                     }
                 }
                 if (r %2 !=0){
-                    g.setColor(new Color(235, 236, 208));
+                    g.setColor(new Color(235, 236, 208,a));
                     if (c %2 ==0){
-                        g.setColor(new Color(119, 149, 86));
+                        g.setColor(new Color(119, 149, 86,a));
                     }
                 }
+
                 
-                g.fillRect(r*100 + 100 , c*100 +100, 100, 100);
+                
+                g.fillRect(r*100 +100, c *100 +100, 100, 100);
+
+                
+                g.setColor(new Color(0,0,0));
+
+                g.drawString(String.valueOf(araypos), (r ) *100 +100, (c ) * 100 +100 );
             }
         }
         int count = 0;
@@ -95,13 +134,7 @@ public class Main extends JPanel implements ActionListener  {
         
         
     }
-    public void test(){
-        for (int i=0; i <64; i++){
 
-            System.out.println(((Board.whitePawns >>> i) & 1L) != 0);
-            
-        }
-    }
     public void drawWhitePieces(int x,int y,  int i , Graphics g ){
 
         if (((Board.whitePawns >>> i) & 1L) != 0) {
@@ -145,4 +178,5 @@ public class Main extends JPanel implements ActionListener  {
             g.drawImage(blackKing, x, y, 100, 100, this);
         }
     }
+
 }
