@@ -1,9 +1,9 @@
 public class Board{
     //board for each white pieces 
-    public static long whitePawns = 0x0000_0100_0001_ff00L ;
+    public static long whitePawns = 0x0000_0000_0000_ff00L ;
     public static long whiteBishops = 0x0000_0000_0000_0024L ;
     public static long whiteKnights = 0x0000_0000_0000_0042L ;
-    public static long whiteRoocks = 0x0000_0000_0000_0081L ;
+    public static long whiteRoocks = 0x0000_0000_1000_0081L ;
     public static long whiteQueen = 0x0000_0000_0000_0008L ;
     public static long whiteKing= 0x0000_0000_0000_0010L ;
 

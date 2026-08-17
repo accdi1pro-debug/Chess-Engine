@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 public class Main extends JPanel implements ActionListener  { 
+
     public Timer timer ;
     public Image whitePawn = new ImageIcon("src/Images/wp.png").getImage();
     public Image whiteBishop = new ImageIcon("src/Images/wb.png").getImage();
@@ -49,16 +50,16 @@ public class Main extends JPanel implements ActionListener  {
 
                     int posInAray = row * 8 + column;
                     
-                    // First show attack squares for the clicked piece
-                    new MovementFuncion().showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);
-                    
-                    // Then check if a move was selected and execute it
-                    if (Board.atackSquares != 0) {
+
+                    if ((((Board.atackSquares >>> posInAray) & 1L) != 0)) {
                         System.out.println("Moving to position: " + posInAray);
-                        new MovementFuncion().movePiece(posInAray);
-                    }
+                        MovementFuncion.movePiece(posInAray);
+                    }else{MovementFuncion.showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);}
 
                     
+                    
+                    // First show attack squares for the clicked piece
+
                     //System.out.println(posInAray);
 
                 }
@@ -93,28 +94,34 @@ public class Main extends JPanel implements ActionListener  {
         super.paintComponent(g); // Clears the screen
         for (int c = 0; c < 8; c++) {
             for (int r = 0; r < 8; r++) {
-                int a = 0;
+                int a =200;
                 int araypos =63 -( (c)*8 + r);
 
-                if (((Board.atackSquares >>> araypos) & 1L) != 0){a = 160;}else{a=255;}
+                
+
 
                 if (r %2 ==0){
-                    g.setColor(new Color(119, 149, 86,a));
+                    g.setColor(new Color(119, 149, 86));
                     if (c %2 ==0){
-                        g.setColor(new Color(235, 236, 208,a));
+                        g.setColor(new Color(235, 236, 208));
                     }
                 }
                 if (r %2 !=0){
-                    g.setColor(new Color(235, 236, 208,a));
+                    g.setColor(new Color(235, 236, 208));
                     if (c %2 ==0){
-                        g.setColor(new Color(119, 149, 86,a));
+                        g.setColor(new Color(119, 149, 86));
                     }
                 }
 
                 
-                g.fillRect(r*100 +100, c *100 +100, 100, 100);
-
                 
+
+                g.fillRect(r*100 +100, c *100 +100, 100, 100);
+                
+               g.setColor(new Color(0,0,0 , 70));
+
+                if (((Board.atackSquares >>>  araypos) & 1L) != 0){g.fillOval(r*100 + 125, c*100 + 125, 50, 50);}
+
                 g.setColor(new Color(0,0,0));
 
                 g.drawString(String.valueOf(araypos), (r ) *100 +100, (c ) * 100 + 200);
