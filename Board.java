@@ -2,8 +2,8 @@ public class Board{
     //board for each white pieces 
     public static long whitePawns = 0x0000_0000_0000_ff00L ;
     public static long whiteBishops = 0x0000_0000_0000_0024L ;
-    public static long whiteKnights = 0x0000_0000_0000_0042L ;
-    public static long whiteRoocks = 0x0000_0000_1000_0081L ;
+    public static long whiteKnights = 0x0000_0000_1000_0042L ;
+    public static long whiteRoocks = 0x0000_0000_0000_0081L ;
     public static long whiteQueen = 0x0000_0000_0000_0008L ;
     public static long whiteKing= 0x0000_0000_0000_0010L ;
 
@@ -16,6 +16,7 @@ public class Board{
     public static long blackKing = 0x1000_0000_0000_0000L ;
 
     public static long atackSquares = 0x0000_0000_0000_0000L ;
+    public static long captureSquares = 0x0000_0000_0000_0000L ;
 
     //boards for each combined pieces by color
     public static long whiteBoard;
@@ -23,5 +24,16 @@ public class Board{
     
     //combined bords of all pieces
     public static long board;
+
+    // column
+    public static long FirstColumn = 0x1010_0101_0101_0101L ;
+    public static long SecondColumn = 0x0202_0202_0202_0202L ;
+    public static long ThirdColumn = 0x0404_0404_0404_0404L ;
+    public static long FourthColumn = 0x0808_0808_0808_0808L ;
+    public static long FifthColumn = 0x1010_1010_1010_1010L ;
+    public static long SixthColumn = 0x2020_2020_2020_2020L ;
+    public static long SeventhColumn = 0x4040_4040_4040_4040L ;
+    public static long EighthColumn = 0x8080_8080_8080_8080L ;
+
 
 }

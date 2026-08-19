@@ -52,7 +52,7 @@ public class Main extends JPanel implements ActionListener  {
                     
 
                     if ((((Board.atackSquares >>> posInAray) & 1L) != 0)) {
-                        System.out.println("Moving to position: " + posInAray);
+                        
                         MovementFuncion.movePiece(posInAray);
                     }else{MovementFuncion.showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);}
 
@@ -94,7 +94,7 @@ public class Main extends JPanel implements ActionListener  {
         super.paintComponent(g); // Clears the screen
         for (int c = 0; c < 8; c++) {
             for (int r = 0; r < 8; r++) {
-                int a =200;
+
                 int araypos =63 -( (c)*8 + r);
 
                 
@@ -118,9 +118,13 @@ public class Main extends JPanel implements ActionListener  {
 
                 g.fillRect(r*100 +100, c *100 +100, 100, 100);
                 
-               g.setColor(new Color(0,0,0 , 70));
+               g.setColor(new Color(0,0,0 , 25));
 
                 if (((Board.atackSquares >>>  araypos) & 1L) != 0){g.fillOval(r*100 + 125, c*100 + 125, 50, 50);}
+                if (((Board.captureSquares>>>  araypos) & 1L) != 0){g.fillOval(r*100 + 110, c*100 + 110, 80, 80);
+                    g.setColor(new Color(0,0,0 , 10));
+                    g.fillOval(r*100 + 125, c*100 + 125, 50, 50);
+                }
 
                 g.setColor(new Color(0,0,0));
 
