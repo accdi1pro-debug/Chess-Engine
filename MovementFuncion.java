@@ -6,6 +6,7 @@ public class MovementFuncion {
         Board.atackSquares = 0;
         pieceMoved = pieceType;
         pieceMovedPos = arayPos;
+        Board.captureSquares = 0;
         if (pieceType.equals("WP")){
             WPMouvement(arayPos);
         }
@@ -21,6 +22,7 @@ public class MovementFuncion {
         if (pieceType.equals("WKN")){
             WKNMovement(arayPos);
         }
+        
 
     }
     public static void movePiece(int arayPos ){
@@ -81,14 +83,14 @@ public class MovementFuncion {
     
     public static void WPMouvement(int arayPos){//check manque la en passent
         //atack movement 
-        if ((63 - arayPos) % 8 != 0) {
+        if (( arayPos) % 8 != 0) {
             if (checkIfSquareisUsedByEnemey(arayPos + 7)) {
                 Board.atackSquares |= (1L << arayPos + 7);
                 Board.captureSquares |= (1L << arayPos + 7);
             }
         }
 
-        if ((arayPos) % 8!= 0) {
+        if ((63-arayPos) % 8!= 0) {
             if (checkIfSquareisUsedByEnemey(arayPos + 9)) {
                 Board.atackSquares |= (1L << arayPos + 9);
                 Board.captureSquares |= (1L << arayPos + 9);
@@ -276,47 +278,104 @@ public class MovementFuncion {
     }
 
     public static void WKNMovement(int arayPos){
-        //top two things
+        //top two 
         if (Math.floor(arayPos / 8) != 7 || Math.floor(arayPos / 8) != 6){
-            if (!checkIfSquareisUsed(arayPos +15)) {
-                Board.atackSquares |= (1L << arayPos + 15); 
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos+15)){
-                    Board.atackSquares |= (1L << arayPos + 15);
-                    Board.captureSquares |= (1L << arayPos+15);
+            if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos +15)) {
+                    Board.atackSquares |= (1L << arayPos + 15); 
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos+15)){
+                        Board.atackSquares |= (1L << arayPos + 15);
+                        Board.captureSquares |= (1L << arayPos+15);
+                    }
                 }
             }
-            if (!checkIfSquareisUsed(arayPos +17)) {
-                Board.atackSquares |= (1L << arayPos + 17);
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos+17)){
+            if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos +17)) {
                     Board.atackSquares |= (1L << arayPos + 17);
-                    Board.captureSquares |= (1L << arayPos+17);
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos+17)){
+                        Board.atackSquares |= (1L << arayPos + 17);
+                        Board.captureSquares |= (1L << arayPos+17);
+                    }
                 }
             }
         }
-        //two down
-        if (Math.floor(arayPos / 8) != 1 || Math.floor(arayPos / 8) != 0){
-            if (!checkIfSquareisUsed(arayPos -15)) {
-                Board.atackSquares |= (1L << arayPos - 15); 
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos-15)){
-                    Board.atackSquares |= (1L << arayPos - 15);
-                    Board.captureSquares |= (1L << arayPos-15);
+        //down two
+
+        if (Math.floor(arayPos / 8) != 0 && Math.floor(arayPos / 8) != 1){
+
+            if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos -15)) {
+                    Board.atackSquares |= (1L << arayPos - 15); 
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos-15)){
+                        Board.atackSquares |= (1L << arayPos - 15);
+                        Board.captureSquares |= (1L << arayPos-15);
+                    }
                 }
             }
-            if (!checkIfSquareisUsed(arayPos -17)) {
-                Board.atackSquares |= (1L << arayPos - 17);
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos-17)){
+            if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos -17)) {
                     Board.atackSquares |= (1L << arayPos - 17);
-                    Board.captureSquares |= (1L << arayPos-17);
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos-17)){
+                        Board.atackSquares |= (1L << arayPos - 17);
+                        Board.captureSquares |= (1L << arayPos-17);
+                    }
                 }
             }
+            
+        }
+
+        //two right
+        if (((Board.FirstColumn >>> arayPos) & 1L) == 0&&((Board.SecondColumn >>> arayPos) & 1L) == 0){
+            
+            if (!checkIfSquareisUsed(arayPos +6)) {
+                Board.atackSquares |= (1L << arayPos + 6); 
+            }else{
+                if (checkIfSquareisUsedByEnemey(arayPos+6)){
+                    Board.atackSquares |= (1L << arayPos + 6);
+                    Board.captureSquares |= (1L << arayPos+6);
+                }
+            }
+            if (Math.floor(arayPos / 8) != 0){
+                if (!checkIfSquareisUsed(arayPos -10)) {
+                Board.atackSquares |= (1L << arayPos - 10);
+                }
+                else{
+                    if (checkIfSquareisUsedByEnemey(arayPos-10)){
+                        Board.atackSquares |= (1L << arayPos - 10);
+                        Board.captureSquares |= (1L << arayPos-10);
+                    }
+                }
+            }
+            
         }
 
         //two left
-        
+        if (((Board.SeventhColumn >>> arayPos) & 1L) == 0&&((Board.EighthColumn >>> arayPos) & 1L) == 0){
+            
+            
+                if (!checkIfSquareisUsed(arayPos +10)) {
+                    Board.atackSquares |= (1L << arayPos + 10); 
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos+10)){
+                        Board.atackSquares |= (1L << arayPos + 10);
+                        Board.captureSquares |= (1L << arayPos+10);
+                    }
+                }
+            if (Math.floor(arayPos / 8) != 0){
+                if (!checkIfSquareisUsed(arayPos -6)) {
+                    Board.atackSquares |= (1L << arayPos - 6);
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos-6)){
+                        Board.atackSquares |= (1L << arayPos - 6);
+                        Board.captureSquares |= (1L << arayPos-6);
+                    }
+                }
+            }
+        }
 
 
     }
