@@ -2,6 +2,13 @@ public class MovementFuncion {
 
     public static String pieceMoved = "";
     public static int pieceMovedPos = 0;
+
+    public static boolean WhiteKingHasBeenMoved = false;
+    public static boolean blackKingHasBeenMoved = false;
+
+    public static boolean WhiteKingHasBeenChecked = false;
+    public static boolean blackKingHasBeenChecked = false;
+
     public static void showAtackSquare(String pieceType , int arayPos){
         Board.atackSquares = 0;
         pieceMoved = pieceType;
@@ -22,15 +29,39 @@ public class MovementFuncion {
         if (pieceType.equals("WKN")){
             WKNMovement(arayPos);
         }
+        if (pieceType.equals("WK")){
+            WKMovement(arayPos);
+        }
+
+        if (pieceType.equals("BP")){
+            BPMouvement(arayPos);
+        }
+        if (pieceType.equals("BB")){
+            BBMouvement(arayPos);
+        }
+        if (pieceType.equals("BR")){
+            BRMouvement(arayPos);
+        }
+        if (pieceType.equals("BQ")){
+            BQMouvement(arayPos);
+        }
+        if (pieceType.equals("BKN")){
+            BKNMovement(arayPos);
+        }
+        if (pieceType.equals("BK")){
+            BKMovement(arayPos);
+        }
         
 
     }
+    
     public static void movePiece(int arayPos ){
         if (((Board.atackSquares >>> arayPos) & 1L) == 0){
 
             return;
         }
         long curentBoard = 0 ;
+
 
         if (pieceMoved.equals("WP")){
            curentBoard = Board.whitePawns ;
@@ -46,6 +77,55 @@ public class MovementFuncion {
         }
         if (pieceMoved.equals("WKN")){
             curentBoard = Board.whiteKnights ;
+        }
+        if (pieceMoved.equals("WK")){
+            if (!WhiteKingHasBeenChecked && !WhiteKingHasBeenMoved){
+                if (arayPos == 1){
+                    Board.whiteRoocks ^= (1L << 0) ;
+
+                    Board.whiteRoocks ^= (1L << 2) ;
+                }
+                if (arayPos == 5){
+                    Board.whiteRoocks ^= (1L << 7) ;
+
+                    Board.whiteRoocks ^= (1L << 4) ;
+                }
+            }
+            WhiteKingHasBeenMoved = true;
+            curentBoard = Board.whiteKing ;
+        }
+
+        if (pieceMoved.equals("BP")){
+           curentBoard = Board.blackPawns ;
+        }
+        if (pieceMoved.equals("BB")){
+            curentBoard = Board.blackBishops ;
+        }
+        if (pieceMoved.equals("BR")){
+            curentBoard = Board.blackRoocks ;
+        }
+        if (pieceMoved.equals("BQ")){
+            curentBoard = Board.blackQueen ;
+        }
+        if (pieceMoved.equals("BKN")){
+            curentBoard = Board.blackKnights ;
+        }
+        if (pieceMoved.equals("BK")){
+
+            blackKingHasBeenMoved = true;
+            if (!WhiteKingHasBeenChecked && !WhiteKingHasBeenMoved){
+                if (arayPos == 61){
+                    Board.blackRoocks ^= (1L << 63) ;
+
+                    Board.blackRoocks ^= (1L << 60) ;
+                }
+                if (arayPos == 57){
+                    Board.blackRoocks ^= (1L << 56) ;
+
+                    Board.blackRoocks ^= (1L << 58) ;
+                }
+            }
+            curentBoard = Board.blackKing ;
         }
         
         curentBoard ^= (1L << pieceMovedPos) ;
@@ -72,6 +152,28 @@ public class MovementFuncion {
         if (pieceMoved.equals("WKN")){
             Board.whiteKnights = curentBoard;
         }
+        if (pieceMoved.equals("WK")){
+            Board.whiteKing = curentBoard;
+        }
+
+        if (pieceMoved.equals("BP")){
+            Board.blackPawns = curentBoard;
+        }
+        if (pieceMoved.equals("BB")){
+            Board.blackBishops =curentBoard  ;
+        }
+        if (pieceMoved.equals("BR")){
+            Board.blackRoocks=curentBoard   ;
+        }
+        if (pieceMoved.equals("BQ")){
+            Board.blackQueen  =curentBoard ;
+        }
+        if (pieceMoved.equals("BKN")){
+            Board.blackKnights  =curentBoard ;
+        }
+        if (pieceMoved.equals("BK")){
+            Board.blackKing =curentBoard  ;
+        }
 
         // Add cases for other piece types (WB, WR, WN, WQ, WK, etc.)
 
@@ -81,7 +183,7 @@ public class MovementFuncion {
         pieceMovedPos = 0;
     }
     
-    public static void WPMouvement(int arayPos){//check manque la en passent
+    public static void WPMouvement(int arayPos){
         //atack movement 
         if (( arayPos) % 8 != 0) {
             if (checkIfSquareisUsedByEnemey(arayPos + 7)) {
@@ -279,7 +381,7 @@ public class MovementFuncion {
 
     public static void WKNMovement(int arayPos){
         //top two 
-        if (Math.floor(arayPos / 8) != 7 || Math.floor(arayPos / 8) != 6){
+        if (Math.floor(arayPos / 8) != 7 && Math.floor(arayPos / 8) != 6){
             if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
                 if (!checkIfSquareisUsed(arayPos +15)) {
                     Board.atackSquares |= (1L << arayPos + 15); 
@@ -331,14 +433,17 @@ public class MovementFuncion {
         //two right
         if (((Board.FirstColumn >>> arayPos) & 1L) == 0&&((Board.SecondColumn >>> arayPos) & 1L) == 0){
             
-            if (!checkIfSquareisUsed(arayPos +6)) {
-                Board.atackSquares |= (1L << arayPos + 6); 
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos+6)){
-                    Board.atackSquares |= (1L << arayPos + 6);
-                    Board.captureSquares |= (1L << arayPos+6);
+            if (Math.floor(arayPos / 8) != 7){
+                if (!checkIfSquareisUsed(arayPos +6)) {
+                    Board.atackSquares |= (1L << arayPos + 6); 
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos+6)){
+                        Board.atackSquares |= (1L << arayPos + 6);
+                        Board.captureSquares |= (1L << arayPos+6);
+                    }
                 }
             }
+
             if (Math.floor(arayPos / 8) != 0){
                 if (!checkIfSquareisUsed(arayPos -10)) {
                 Board.atackSquares |= (1L << arayPos - 10);
@@ -356,7 +461,7 @@ public class MovementFuncion {
         //two left
         if (((Board.SeventhColumn >>> arayPos) & 1L) == 0&&((Board.EighthColumn >>> arayPos) & 1L) == 0){
             
-            
+            if (Math.floor(arayPos %8) != 0){
                 if (!checkIfSquareisUsed(arayPos +10)) {
                     Board.atackSquares |= (1L << arayPos + 10); 
                 }else{
@@ -365,6 +470,8 @@ public class MovementFuncion {
                         Board.captureSquares |= (1L << arayPos+10);
                     }
                 }
+            }
+
             if (Math.floor(arayPos / 8) != 0){
                 if (!checkIfSquareisUsed(arayPos -6)) {
                     Board.atackSquares |= (1L << arayPos - 6);
@@ -378,6 +485,504 @@ public class MovementFuncion {
         }
 
 
+    }
+
+    public static void WKMovement(int arayPos){
+        //right
+        if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
+            if (!checkIfSquareisUsed(arayPos -1)) {
+                Board.atackSquares |= (1L << arayPos - 1); 
+            }else{
+                if (checkIfSquareisUsedByEnemey(arayPos-1)){
+                    Board.atackSquares |= (1L << arayPos - 1);
+                    Board.captureSquares |= (1L << arayPos-1);
+                }
+            }
+
+            if (Math.floor(arayPos/8) !=7){
+                if (!checkIfSquareisUsed(arayPos +7)) {
+                    Board.atackSquares |= (1L << arayPos + 7); 
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos+7)){
+                        Board.atackSquares |= (1L << arayPos + 7);
+                        Board.captureSquares |= (1L << arayPos+7);
+                    }
+                }
+            }
+
+            if (Math.floor(arayPos/8) !=0){
+                if (!checkIfSquareisUsed(arayPos -9)) {
+                    Board.atackSquares |= (1L << arayPos -9); 
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos-9)){
+                        Board.atackSquares |= (1L << arayPos -9);
+                        Board.captureSquares |= (1L << arayPos-9);
+                    }
+                }
+            }
+
+            
+        }
+
+        //left
+        if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
+            if (!checkIfSquareisUsed(arayPos + 1)) {
+                Board.atackSquares |= (1L << arayPos + 1); 
+            }else{
+                if (checkIfSquareisUsedByEnemey(arayPos + 1)){
+                    Board.atackSquares |= (1L << arayPos + 1);
+                    Board.captureSquares |= (1L << arayPos + 1);
+                } 
+            }
+
+            if (Math.floor(arayPos/8) !=0){
+                if (!checkIfSquareisUsed(arayPos -7)) {
+                    Board.atackSquares |= (1L << arayPos - 7); 
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos-7)){
+                        Board.atackSquares |= (1L << arayPos - 7);
+                        Board.captureSquares |= (1L << arayPos-7);
+                    }
+                }
+            }
+
+            if (Math.floor(arayPos/8) !=7){
+                if (!checkIfSquareisUsed(arayPos +9)) {
+                    Board.atackSquares |= (1L << arayPos +9); 
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos+9)){
+                        Board.atackSquares |= (1L << arayPos +9);
+                        Board.captureSquares |= (1L << arayPos+9);
+                    }
+                }
+            }
+        }
+
+        if (Math.floor(arayPos/8) !=7){
+            if (!checkIfSquareisUsed(arayPos +8)) {
+                Board.atackSquares |= (1L << arayPos +8); 
+            }else{
+                if (checkIfSquareisUsedByEnemey(arayPos+8)){
+                    Board.atackSquares |= (1L << arayPos +8);
+                    Board.captureSquares |= (1L << arayPos+8);
+                }
+            }
+        }
+
+        if (Math.floor(arayPos/8) !=0){
+            if (!checkIfSquareisUsed(arayPos - 8)) {
+                Board.atackSquares |= (1L << arayPos - 8); 
+            }else{
+                if (checkIfSquareisUsedByEnemey(arayPos - 8)){
+                    Board.atackSquares |= (1L << arayPos - 8);
+                    Board.captureSquares |= (1L << arayPos - 8);
+                } 
+            }
+        }
+
+        if (!WhiteKingHasBeenChecked && !WhiteKingHasBeenMoved){
+            checkWhiteCastling();
+        }
+    }
+
+    //Black pieces movement
+
+    public static void BPMouvement(int arayPos){
+        //atack movement 
+        if (( arayPos) % 8 != 7) {
+            if (checkIfSquareisUsedByEnemeyBlack(arayPos - 7)) {
+                Board.atackSquares |= (1L << arayPos - 7);
+                Board.captureSquares |= (1L << arayPos - 7);
+            }
+        }
+
+        if ((63-arayPos) % 8!= 0) {
+            if (checkIfSquareisUsedByEnemeyBlack(arayPos - 9)) {
+                Board.atackSquares |= (1L << arayPos - 9);
+                Board.captureSquares |= (1L << arayPos - 9);
+            }
+        }
+        //if its on the second row advance two
+        if (Math.floor(arayPos/8)==6) {
+            if (!checkIfSquareisUsed(arayPos - 8)) {
+                Board.atackSquares |= (1L << arayPos - 8);
+                if (!checkIfSquareisUsed(arayPos - 16)) {
+                    Board.atackSquares |= (1L << arayPos - 16);
+                }
+            }
+
+        } else {
+            if (!checkIfSquareisUsed(arayPos - 8)) {
+                Board.atackSquares |= (1L << arayPos - 8);
+            }
+        }
+
+       
+        
+    }
+
+    public static void BBMouvement(int arayPos) {
+        if ((arayPos) % 8 != 0) {
+
+            //top right  
+            if (Math.floor(arayPos / 8) != 7) {
+                for (int i = 1; i < 10; i++) {
+
+                    if (!checkIfSquareisUsed(arayPos + i * 7)) {
+                        Board.atackSquares |= (1L << arayPos + i * 7);
+                    } else {
+                        if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * 7)) {
+                            Board.atackSquares |= (1L << arayPos + i * 7);
+                            Board.captureSquares |= (1L << arayPos + i * 7);
+                        }
+                        break;
+                    }
+                    if ((arayPos + i * 7) % 8 == 0 || (63 - (arayPos + i * 7)) % 8 == 0 || Math.floor((arayPos + i * 7) / 8) == 7) {
+                        break;
+                    }
+                }
+            }
+
+            //down right
+            if (Math.floor(arayPos / 8) != 0) {
+
+                for (int i = 1; i < 10; i++) {
+                    if (!checkIfSquareisUsed(arayPos - i * 9)) {
+                        Board.atackSquares |= (1L << arayPos - i * 9);
+                    } else {
+                        if (checkIfSquareisUsedByEnemeyBlack(arayPos - i * 9)) {
+                            Board.atackSquares |= (1L << arayPos - i * 9);
+                            Board.captureSquares |= (1L << arayPos - i * 9);
+                        }
+                        break;
+                    }
+
+                    if ((arayPos - i * 9) % 8 == 0 || (63 - (arayPos - i * 9)) % 8 == 0 || Math.floor((arayPos - i * 9) / 8) == 0) {
+                        break;
+                    }
+                }
+            }
+
+        }
+        if ((63 - (arayPos)) % 8 != 0) {
+            //down left
+            if (Math.floor(arayPos / 8) != 0) {
+                for (int i = 1; i < 10; i++) {
+
+                    if (!checkIfSquareisUsed(arayPos - i * 7)) {
+                        Board.atackSquares |= (1L << arayPos - i * 7);
+                    } else {
+                        if (checkIfSquareisUsedByEnemeyBlack(arayPos - i * 7)) {
+                            Board.atackSquares |= (1L << arayPos - i * 7);
+                            Board.captureSquares |= (1L << arayPos - i * 7);
+                        }
+                        break;
+                    }
+                    if ((arayPos - i * 7) % 8 == 0 || (63 - (arayPos - i * 7)) % 8 == 0 || Math.floor((arayPos - i * 7) / 8) == 0) {
+                        break;
+                    }
+
+                }
+            }
+
+            //top left
+            if (Math.floor(arayPos / 8) != 7) {
+                for (int i = 1; i < 10; i++) {
+
+                    if (!checkIfSquareisUsed(arayPos + i * 9)) {
+                        Board.atackSquares |= (1L << arayPos + i * 9);
+                    } else {
+                        if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * 9)) {
+                            Board.atackSquares |= (1L << arayPos + i * 9);
+                            Board.captureSquares |= (1L << arayPos + i * 9);
+                        }
+                        break;
+                    }
+                    if ((arayPos + i * 9) % 8 == 0 || (63 - (arayPos + i * 9)) % 8 == 0 || Math.floor((arayPos - i * 9) / 8) == 7) {
+                        break;
+                    }
+                }
+            }
+
+        }
+    }
+
+    public static void BRMouvement(int arayPos) {
+        // top
+        if (Math.floor(arayPos / 8) != 7) {
+            for (int i = 1; i < 9; i++) {
+                if (!checkIfSquareisUsed(arayPos + i * 8)) {
+                    Board.atackSquares |= (1L << arayPos + i * 8);
+                } else {
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * 8)) {
+                        Board.atackSquares |= (1L << arayPos + i * 8);
+                        Board.captureSquares |= (1L << arayPos + i * 8);
+                    }
+                    break;
+                }
+                if (Math.floor((arayPos +i*8)/ 8) == 7) {break;}
+
+            }
+        }
+        // down
+        if (Math.floor(arayPos / 8) != 0) {
+            for (int i = 1; i < 9; i++) {
+                if (!checkIfSquareisUsed(arayPos - i * 8)) {
+                    Board.atackSquares |= (1L << arayPos - i * 8);
+                } else {
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos - i * 8)) {
+                        Board.atackSquares |= (1L << arayPos - i * 8);
+                        Board.captureSquares |= (1L << arayPos - i * 8);
+                    }
+                    break;
+                }
+                if (Math.floor((arayPos -i*8)/ 8) == 0) {break;}
+            }
+        }
+        //left
+        if ((63 - arayPos) % 8 != 0) {
+            for (int i = 1; i < 9; i++) {
+
+                if (!checkIfSquareisUsed(arayPos + i)) {
+                    Board.atackSquares |= (1L << arayPos + i);
+                } else {
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos + i)) {
+                        Board.atackSquares |= (1L << arayPos + i);
+                        Board.captureSquares |= (1L << arayPos + i);
+                    }
+                    break;
+                }
+                if ((63 - (arayPos + i)) % 8 == 0) {
+                    break;
+                }
+            }
+        }
+
+        //right
+        if ((arayPos) % 8 != 0) {
+            for (int i = 1; i < 9; i++) {
+
+                if (!checkIfSquareisUsed(arayPos - i)) {
+                    Board.atackSquares |= (1L << arayPos - i);
+                } else {
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos - i)) {
+                        Board.atackSquares |= (1L << arayPos - i);
+                        Board.captureSquares |= (1L << arayPos - i);
+                    }
+                    break;
+                }
+                if ((arayPos - i) % 8 == 0) {
+                    break;
+                }
+            }
+        }
+    }
+
+    public static void BQMouvement(int arayPos){
+        BBMouvement(arayPos);
+        BRMouvement(arayPos);
+    }
+
+    public static void BKNMovement(int arayPos){
+        //top two 
+        if (Math.floor(arayPos / 8) != 7 && Math.floor(arayPos / 8) != 6){
+            if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos +15)) {
+                    Board.atackSquares |= (1L << arayPos + 15); 
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+15)){
+                        Board.atackSquares |= (1L << arayPos + 15);
+                        Board.captureSquares |= (1L << arayPos+15);
+                    }
+                }
+            }
+            if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos +17)) {
+                    Board.atackSquares |= (1L << arayPos + 17);
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+17)){
+                        Board.atackSquares |= (1L << arayPos + 17);
+                        Board.captureSquares |= (1L << arayPos+17);
+                    }
+                }
+            }
+        }
+        //down two
+
+        if (Math.floor(arayPos / 8) != 0 && Math.floor(arayPos / 8) != 1){
+
+            if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos -15)) {
+                    Board.atackSquares |= (1L << arayPos - 15); 
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-15)){
+                        Board.atackSquares |= (1L << arayPos - 15);
+                        Board.captureSquares |= (1L << arayPos-15);
+                    }
+                }
+            }
+            if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos -17)) {
+                    Board.atackSquares |= (1L << arayPos - 17);
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-17)){
+                        Board.atackSquares |= (1L << arayPos - 17);
+                        Board.captureSquares |= (1L << arayPos-17);
+                    }
+                }
+            }
+            
+        }
+
+        //two right
+        if (((Board.FirstColumn >>> arayPos) & 1L) == 0&&((Board.SecondColumn >>> arayPos) & 1L) == 0){
+            if (Math.floor(arayPos / 8) != 7){
+                if (!checkIfSquareisUsed(arayPos +6)) {
+                    Board.atackSquares |= (1L << arayPos + 6); 
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+6)){
+                        Board.atackSquares |= (1L << arayPos + 6);
+                        Board.captureSquares |= (1L << arayPos+6);
+                    }
+                }
+            }
+
+            if (Math.floor(arayPos / 8) != 0){
+                if (!checkIfSquareisUsed(arayPos -10)) {
+                Board.atackSquares |= (1L << arayPos - 10);
+                }
+                else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-10)){
+                        Board.atackSquares |= (1L << arayPos - 10);
+                        Board.captureSquares |= (1L << arayPos-10);
+                    }
+                }
+            }
+            
+        }
+
+        //two left
+        if (((Board.SeventhColumn >>> arayPos) & 1L) == 0&&((Board.EighthColumn >>> arayPos) & 1L) == 0){
+            
+            if (Math.floor(arayPos / 8) != 7){
+                if (!checkIfSquareisUsed(arayPos +10)) {
+                    Board.atackSquares |= (1L << arayPos + 10); 
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+10)){
+                        Board.atackSquares |= (1L << arayPos + 10);
+                        Board.captureSquares |= (1L << arayPos+10);
+                    }
+                }
+            }
+
+            if (Math.floor(arayPos / 8) != 0){
+                if (!checkIfSquareisUsed(arayPos -6)) {
+                    Board.atackSquares |= (1L << arayPos - 6);
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-6)){
+                        Board.atackSquares |= (1L << arayPos - 6);
+                        Board.captureSquares |= (1L << arayPos-6);
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    public static void BKMovement(int arayPos){
+        //right
+        if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
+            if (!checkIfSquareisUsed(arayPos -1)) {
+                Board.atackSquares |= (1L << arayPos - 1); 
+            }else{
+                if (checkIfSquareisUsedByEnemeyBlack(arayPos-1)){
+                    Board.atackSquares |= (1L << arayPos - 1);
+                    Board.captureSquares |= (1L << arayPos-1);
+                }
+            }
+
+            if (Math.floor(arayPos/8) !=7){
+                if (!checkIfSquareisUsed(arayPos +7)) {
+                    Board.atackSquares |= (1L << arayPos + 7); 
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+7)){
+                        Board.atackSquares |= (1L << arayPos + 7);
+                        Board.captureSquares |= (1L << arayPos+7);
+                    }
+                }
+            }
+
+            if (Math.floor(arayPos/8) !=0){
+                if (!checkIfSquareisUsed(arayPos -9)) {
+                    Board.atackSquares |= (1L << arayPos -9); 
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-9)){
+                        Board.atackSquares |= (1L << arayPos -9);
+                        Board.captureSquares |= (1L << arayPos-9);
+                    }
+                }
+            }
+        }
+        //left
+        if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
+            if (!checkIfSquareisUsed(arayPos + 1)) {
+                Board.atackSquares |= (1L << arayPos + 1); 
+            }else{
+                if (checkIfSquareisUsedByEnemeyBlack(arayPos + 1)){
+                    Board.atackSquares |= (1L << arayPos + 1);
+                    Board.captureSquares |= (1L << arayPos + 1);
+                } 
+            }
+
+            if (Math.floor(arayPos/8) !=0){
+                if (!checkIfSquareisUsed(arayPos -7)) {
+                    Board.atackSquares |= (1L << arayPos - 7); 
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-7)){
+                        Board.atackSquares |= (1L << arayPos - 7);
+                        Board.captureSquares |= (1L << arayPos-7);
+                    }
+                }
+            }
+
+            if (Math.floor(arayPos/8) !=7){
+                if (!checkIfSquareisUsed(arayPos +9)) {
+                    Board.atackSquares |= (1L << arayPos +9); 
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+9)){
+                        Board.atackSquares |= (1L << arayPos +9);
+                        Board.captureSquares |= (1L << arayPos+9);
+                    }
+                }
+            }
+        }
+
+        if (Math.floor(arayPos/8) !=7){
+            if (!checkIfSquareisUsed(arayPos +8)) {
+                Board.atackSquares |= (1L << arayPos +8); 
+            }else{
+                if (checkIfSquareisUsedByEnemeyBlack(arayPos+8)){
+                    Board.atackSquares |= (1L << arayPos +8);
+                    Board.captureSquares |= (1L << arayPos+8);
+                }
+            }
+        }
+
+        if (Math.floor(arayPos/8) !=0){
+            if (!checkIfSquareisUsed(arayPos - 8)) {
+                Board.atackSquares |= (1L << arayPos - 8); 
+            }else{
+                if (checkIfSquareisUsedByEnemeyBlack(arayPos - 8)){
+                    Board.atackSquares |= (1L << arayPos - 8);
+                    Board.captureSquares |= (1L << arayPos - 8);
+                } 
+            }
+        }
+
+        if (!blackKingHasBeenChecked && !blackKingHasBeenMoved){
+            checkBlackCastling();
+        }
     }
 
     public static boolean checkIfSquareisUsedByEnemey(int i){
@@ -398,6 +1003,30 @@ public class MovementFuncion {
             return true;
         }
         if (((Board.blackKing >>> i) & 1L) != 0) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    public static boolean checkIfSquareisUsedByEnemeyBlack(int i){
+        
+        if (((Board.whitePawns >>> i) & 1L) != 0) {
+            return true;
+        }
+        if (((Board.whiteBishops >>> i) & 1L) != 0) {
+            return true;
+        }
+        if (((Board.whiteRoocks >>> i) & 1L) != 0) {
+            return true;
+        }
+        if (((Board.whiteKnights >>> i) & 1L) != 0) {
+            return true;
+        }
+        if (((Board.whiteQueen >>> i) & 1L) != 0) {
+            return true;
+        }
+        if (((Board.whiteKing >>> i) & 1L) != 0) {
             return true;
         }
         
@@ -486,4 +1115,24 @@ public class MovementFuncion {
             Board.blackKing ^= (1L << i) ;
         }
     }
+
+    public static void checkWhiteCastling(){
+        if ((Board.whiteRoocks & 1L ) != 0 && !checkIfSquareisUsed(1) && !checkIfSquareisUsed(2)) {
+            Board.atackSquares |= (1L << 1);
+        }
+        if (((Board.whiteRoocks >>> 7) & 1L) != 0 && !checkIfSquareisUsed(6) && !checkIfSquareisUsed(5) && !checkIfSquareisUsed(4)) {
+            Board.atackSquares |= (1L << 5);
+        }
+    }
+    public static void checkBlackCastling(){
+       
+        if (((Board.blackRoocks >>> 56) & 1L) != 0 && !checkIfSquareisUsed(57) && !checkIfSquareisUsed(58)) {
+            Board.atackSquares |= (1L << 57);
+        }
+        if (((Board.blackRoocks >>> 63) & 1L) != 0 && !checkIfSquareisUsed(62) && !checkIfSquareisUsed(61) && !checkIfSquareisUsed(60)) {
+            Board.atackSquares |= (1L << 61);
+        }
+    }
 }
+
+
