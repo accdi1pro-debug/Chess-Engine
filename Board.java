@@ -25,6 +25,9 @@ public class Board{
     //combined bords of all pieces
     public static long board;
 
+    //all check squares
+    public static long checkSquares;
+
     // column
     public static long FirstColumn = 0x0101_0101_0101_0101L ;
     public static long SecondColumn = 0x0202_0202_0202_0202L ;
@@ -35,5 +38,16 @@ public class Board{
     public static long SeventhColumn = 0x4040_4040_4040_4040L ;
     public static long EighthColumn = 0x8080_8080_8080_8080L ;
 
+    //rows
+    public static long FirstRow = 0x0000_0000_0000_00ffL ;
+    public static long SecondRow = 0x0000_0000_0000_ff00L ;
+    public static long ThirdCRow = 0x0000_0000_00ff_0000L ;
+    public static long FourthRow = 0x0000_0000_ff00_0000L ;
+    public static long FifthRow = 0x0000_00ff_0000_0000L ;
+    public static long SixthRow = 0x0000_ff00_0000_0000L ;
+    public static long SeventhRow = 0x00ff_0000_0000_0000L ;
+    public static long EighthRow = 0xff00_0000_0000_0000L ;
+
+    public static long boundaries = 0xff81_8181_8181_81ffL ;
 
 }

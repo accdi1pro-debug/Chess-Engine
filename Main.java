@@ -113,7 +113,7 @@ public class Main extends JPanel implements ActionListener  {
                     }
                 }
 
-                
+                if (((Board.checkSquares >>>  araypos) & 1L) != 0){g.setColor(new Color(255,0,0));}
                 
 
                 g.fillRect(r*100 +100, c *100 +100, 100, 100);
@@ -125,6 +125,11 @@ public class Main extends JPanel implements ActionListener  {
                     g.setColor(new Color(0,0,0 , 10));
                     g.fillOval(r*100 + 125, c*100 + 125, 50, 50);
                 }
+
+                
+                
+
+
 
                 g.setColor(new Color(0,0,0));
 
@@ -199,49 +204,49 @@ public class Main extends JPanel implements ActionListener  {
         }
     }
 
-    public String returnPiece(int i ){
+    public int returnPiece(int i ){
 
         if (((Board.whitePawns >>> i) & 1L) != 0) {
-            return "WP";
+            return 1;
         }
         if (((Board.whiteBishops >>> i) & 1L) != 0) {
-            return "WB";
+            return 2;
         }
         if (((Board.whiteRoocks >>> i) & 1L) != 0) {
-            return "WR";
+            return 3;
         }
         if (((Board.whiteKnights >>> i) & 1L) != 0) {
-            return "WKN";
+            return 5;
         }
         if (((Board.whiteQueen >>> i) & 1L) != 0) {
-            return "WQ";
+            return 4;
         }
         if (((Board.whiteKing >>> i) & 1L) != 0) {
-            return "WK";
+            return 6;
         }
     
         
 
         if (((Board.blackPawns >>> i) & 1L) != 0) {
-            return "BP";
+            return 7;
         }
         if (((Board.blackBishops >>> i) & 1L) != 0) {
-            return "BB";
+            return 8;
         }
         if (((Board.blackRoocks >>> i) & 1L) != 0) {
-            return "BR";
+            return 9;
         }
         if (((Board.blackKnights >>> i) & 1L) != 0) {
-            return "BKN";
+            return 11;
         }
         if (((Board.blackQueen >>> i) & 1L) != 0) {
-            return "BQ";
+            return 10;
         }
         if (((Board.blackKing >>> i) & 1L) != 0) {
-            return "BK";
+            return 12;
         }
         
-        return "";
+        return 0;
     }
 
 }
