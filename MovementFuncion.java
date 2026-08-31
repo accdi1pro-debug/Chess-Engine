@@ -217,6 +217,11 @@ public class MovementFuncion {
                         if (((Board.checkSquares >>>arayPos ) & 1L ) == 0){
                             Board.atackSquares |= (1L << arayPos + 9);
                             Board.captureSquares |= (1L << arayPos + 9);
+                        }else{
+                            if (((Board.checkSquares >>>arayPos+9 ) & 1L ) == 1){
+                                Board.atackSquares |= (1L << arayPos + 9);
+                                Board.captureSquares |= (1L << arayPos + 9);
+                            }
                         }
                     }else{
                         if (((Board.checkSquares >>> arayPos+9)& 1L )==1){
@@ -233,7 +238,10 @@ public class MovementFuncion {
                     if (!whiteIsInCheck){
                         if (((Board.checkSquares >>> arayPos) &1L ) ==0 ){
                             Board.atackSquares |= (1L << arayPos + 8);
-                        }
+                        }else{if (((Board.checkSquares >>> arayPos+8)& 1L )==1){
+                            Board.atackSquares |= (1L << arayPos + 8);
+                        }}
+                        
                     }else{
                         if (((Board.checkSquares >>> arayPos +8) &1L ) ==1 ){
                             Board.atackSquares |= (1L << arayPos + 8);
@@ -244,6 +252,10 @@ public class MovementFuncion {
                         if (!whiteIsInCheck){
                             if (((Board.checkSquares >>> arayPos) &1L ) ==0 ){
                                 Board.atackSquares |= (1L << arayPos + 16);
+                            }else{
+                                if (((Board.checkSquares >>> arayPos+16)& 1L )==1){
+                                    Board.atackSquares |= (1L << arayPos + 16);
+                                }
                             }
                         }else{
                             if (((Board.checkSquares >>> arayPos +16) &1L ) ==1 ){
@@ -257,6 +269,9 @@ public class MovementFuncion {
                     if (!whiteIsInCheck){
                         if (((Board.checkSquares >>> arayPos) &1L ) ==0 ){
                             Board.atackSquares |= (1L << arayPos + 8);
+                        }else{if (((Board.checkSquares >>> arayPos+8)& 1L )==1){
+                                Board.atackSquares |= (1L << arayPos + 8);
+                            }
                         }
                     }else{
                         if (((Board.checkSquares >>> arayPos +8) &1L ) ==1 ){
@@ -268,162 +283,90 @@ public class MovementFuncion {
         //}
         
     }
-
-    public static void WBMouvement(int arayPos) {
-        if (((Board.FirstColumn >>> arayPos) & 1L) == 0) {
+    
+    public static void WBM(int arayPos , int value , long bOne , long bTwo , int[] values){
+        if (((bOne >>> arayPos) & 1L) == 0) {
 
             //top right  
-            if (((Board.EighthRow >>> arayPos) & 1L) == 0) {
+            if (((bTwo >>> arayPos) & 1L) == 0) {
                 for (int i = 1; i < 10; i++) {
 
-                    if (!checkIfSquareisUsed(arayPos + i * 7)) {
-                        Board.atackSquares |= (1L << arayPos + i * 7);
+                    if (!checkIfSquareisUsed(arayPos + i * values[value] )) {
+                        Board.atackSquares |= (1L << arayPos + i * values[value]);
                     } else {
-                        if (checkIfSquareisUsedByEnemey(arayPos + i * 7)) {
-                            Board.atackSquares |= (1L << arayPos + i * 7);
-                            Board.captureSquares |= (1L << arayPos + i * 7);
+                        if (checkIfSquareisUsedByEnemey(arayPos + i * values[value])) {
+                            Board.atackSquares |= (1L << arayPos + i * values[value]);
+                            Board.captureSquares |= (1L << arayPos + i * values[value]);
                         }
                         break;
                     }
-                    if (((Board.FirstColumn >>> arayPos+i*7) & 1L) != 0||((Board.EighthColumn >>> arayPos + i*7) & 1L) != 0 || ((Board.EighthRow >>> arayPos + i*7) & 1L) != 0 ){
+                    if (((Board.boundaries >>> arayPos+i*values[value]) & 1L) != 0 ){
                         break;
                     }
                 }
             }
-
-            //down right
-            if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
-
-                for (int i = 1; i < 10; i++) {
-                    if (!checkIfSquareisUsed(arayPos - i * 9)) {
-                        Board.atackSquares |= (1L << arayPos - i * 9);
-                    } else {
-                        if (checkIfSquareisUsedByEnemey(arayPos - i * 9)) {
-                            Board.atackSquares |= (1L << arayPos - i * 9);
-                            Board.captureSquares |= (1L << arayPos - i * 9);
-                        }
-                        break;
-                    }
-
-                    if (((Board.FirstColumn >>> arayPos-i*9) & 1L) != 0 ||((Board.EighthColumn >>> arayPos-i*9) & 1L) != 0 || ((Board.FirstRow >>> arayPos-i*9) & 1L) != 0) {
-                        break;
-                    }
-                }
-            }
-
         }
-        if (((Board.EighthColumn >>> arayPos) & 1L) == 0) {
-            //down left
-            if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
-                for (int i = 1; i < 10; i++) {
+    }
+    
+    public static void WBMouvement(int arayPos) {
 
-                    if (!checkIfSquareisUsed(arayPos - i * 7)) {
-                        Board.atackSquares |= (1L << arayPos - i * 7);
-                    } else {
-                        if (checkIfSquareisUsedByEnemey(arayPos - i * 7)) {
-                            Board.atackSquares |= (1L << arayPos - i * 7);
-                            Board.captureSquares |= (1L << arayPos - i * 7);
-                        }
-                        break;
-                    }
-                    if (((Board.FirstColumn >>> arayPos-i*7) & 1L) != 0||((Board.EighthColumn >>> arayPos - i*7) & 1L) != 0 ||((Board.FirstRow >>> arayPos -i*7)& 1L) != 0) {
-                        break;
-                    }
+        int[] values = {7, -9 , -7 ,9};
+        long boundarieOne =0;
+        long boundarieTwo = 0 ;
 
-                }
+        for (int i = 0; i < values.length ; i++){
+            if (i ==0){
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.EighthRow;
+            }if(i == 1){
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.FirstRow;
+            }if (i ==2){
+                boundarieOne = Board.EighthColumn;
+                boundarieTwo = Board.FirstRow;
+            }if(i == 3){
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.EighthColumn;
             }
+            WBM(arayPos, i, boundarieOne, boundarieTwo, values);
+        }        
+    }
 
-            //top left
-            if (((Board.EighthRow >>> arayPos )& 1L)==0) {
-                for (int i = 1; i < 10; i++) {
-
-                    if (!checkIfSquareisUsed(arayPos + i * 9)) {
-                        Board.atackSquares |= (1L << arayPos + i * 9);
-                    } else {
-                        if (checkIfSquareisUsedByEnemey(arayPos + i * 9)) {
-                            Board.atackSquares |= (1L << arayPos + i * 9);
-                            Board.captureSquares |= (1L << arayPos + i * 9);
-                        }
-                        break;
+    public static void WRM(int arayPos , int value , long bOne , int[] values){
+       if (((bOne >>> arayPos) & 1L) == 0) {
+            for (int i = 1; i < 9; i++) {
+                if (!checkIfSquareisUsed(arayPos + i *values[value])) {
+                    Board.atackSquares |= (1L << arayPos + i * values[value]);
+                } else {
+                    if (checkIfSquareisUsedByEnemey(arayPos + i * values[value])) {
+                        Board.atackSquares |= (1L << arayPos + i * values[value]);
+                        Board.captureSquares |= (1L << arayPos + i * values[value]);
                     }
-                    if (((Board.FirstColumn >>> arayPos+i*9) & 1L) != 0 ||((Board.EighthColumn >>> arayPos+i*9) & 1L) != 0 || ((Board.EighthRow >>> arayPos+i*9) & 1L) != 0) {
-                        break;
-                    }
+                    break;
                 }
-            }
+                if (((bOne >>> arayPos+i*values[value]) & 1L) != 0) {break;}
 
+            }
         }
     }
 
     public static void WRMouvement(int arayPos) {
-        // top
-        if (((Board.EighthRow >>> arayPos) & 1L) == 0) {
-            for (int i = 1; i < 9; i++) {
-                if (!checkIfSquareisUsed(arayPos + i * 8)) {
-                    Board.atackSquares |= (1L << arayPos + i * 8);
-                } else {
-                    if (checkIfSquareisUsedByEnemey(arayPos + i * 8)) {
-                        Board.atackSquares |= (1L << arayPos + i * 8);
-                        Board.captureSquares |= (1L << arayPos + i * 8);
-                    }
-                    break;
-                }
-                if (((Board.EighthRow >>> arayPos+i*8) & 1L) != 0) {break;}
+        int[] values = {8, -8 , 1 ,-1};
+        long boundarieOne =0;
 
+        for (int i = 0; i < values.length ; i++){
+            if (i ==0){
+                boundarieOne = Board.EighthRow; 
+            }if(i == 1){
+                boundarieOne =Board.FirstRow;
+            }if (i ==2){
+                boundarieOne = Board.EighthColumn;
+            }if(i == 3){
+                boundarieOne = Board.FirstColumn;
             }
-        }
-        // down
-        if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
-            for (int i = 1; i < 9; i++) {
-                if (!checkIfSquareisUsed(arayPos - i * 8)) {
-                    Board.atackSquares |= (1L << arayPos - i * 8);
-                } else {
-                    if (checkIfSquareisUsedByEnemey(arayPos - i * 8)) {
-                        Board.atackSquares |= (1L << arayPos - i * 8);
-                        Board.captureSquares |= (1L << arayPos - i * 8);
-                    }
-                    break;
-                }
-                if (((Board.FirstRow >>> arayPos - i *8) & 1L) != 0) {break;}
-            }
-        }
-        //left
-        if (((Board.EighthColumn >>> arayPos) & 1L) == 0) {
-            for (int i = 1; i < 9; i++) {
-
-                if (!checkIfSquareisUsed(arayPos + i)) {
-                    Board.atackSquares |= (1L << arayPos + i);
-                } else {
-                    if (checkIfSquareisUsedByEnemey(arayPos + i)) {
-                        Board.atackSquares |= (1L << arayPos + i);
-                        Board.captureSquares |= (1L << arayPos + i);
-                    }
-                    break;
-                }
-                if (((Board.EighthColumn >>> arayPos+i) & 1L) != 0) {
-                    break;
-                }
-            }
+            WRM(arayPos, i, boundarieOne,  values);
         }
 
-        //right
-        if (((Board.FirstColumn >>> arayPos) & 1L) == 0) {
-            for (int i = 1; i < 9; i++) {
-
-                if (!checkIfSquareisUsed(arayPos - i)) {
-                    Board.atackSquares |= (1L << arayPos - i);
-                } else {
-                    if (checkIfSquareisUsedByEnemey(arayPos - i)) {
-                        Board.atackSquares |= (1L << arayPos - i);
-                        Board.captureSquares |= (1L << arayPos - i);
-                    }
-                    break;
-                }
-                if (((Board.FirstColumn >>> arayPos-i) & 1L) != 0) {
-                    break;
-                }
-            }
-        }
     }
 
     public static void WQMouvement(int arayPos){
@@ -431,205 +374,125 @@ public class MovementFuncion {
         WRMouvement(arayPos);
     }
 
+    public static void WKNM(int arayPos , int value , long bOne , long bTwo ,long bThree, int[] values){
+        if (((bOne >>> arayPos) & 1L) == 0&&((bTwo >>> arayPos) & 1L) == 0){
+            
+             if (((bThree >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos +values[value])) {
+                    Board.atackSquares |= (1L << arayPos + values[value]);
+                }else{
+                    if (checkIfSquareisUsedByEnemey(arayPos+values[value])){
+                        Board.atackSquares |= (1L << arayPos + values[value]);
+                        Board.captureSquares |= (1L << arayPos+values[value]);
+                    }
+                }
+            }
+        }
+    }
+
     public static void WKNMovement(int arayPos){
-        //top two 
-        if (Math.floor(arayPos / 8) != 7 && Math.floor(arayPos / 8) != 6){
-            if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
-                if (!checkIfSquareisUsed(arayPos +15)) {
-                    Board.atackSquares |= (1L << arayPos + 15); 
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos+15)){
-                        Board.atackSquares |= (1L << arayPos + 15);
-                        Board.captureSquares |= (1L << arayPos+15);
-                    }
-                }
+        
+        int[] values = {15, 17, -15, -17, 6, -10, 10, -6 }; 
+        long boundarieOne =0;
+        long boundarieTwo = 0 ;
+        long boundarieThree = 0 ;
+
+        for (int i = 0; i < values.length ; i++){
+            //top two
+            if (i ==0){//15
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.SeventhRow;
+                boundarieThree = Board.FirstColumn ;
+            }if(i == 1){//17
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.SeventhRow;
+                boundarieThree = Board.EighthColumn;
             }
-            if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
-                if (!checkIfSquareisUsed(arayPos +17)) {
-                    Board.atackSquares |= (1L << arayPos + 17);
+            //down two
+            if (i ==2){//-15
+                boundarieOne = Board.FirstRow;
+                boundarieTwo = Board.SecondRow ;
+                boundarieThree =Board.EighthColumn ;
+            }if(i == 3){//-17
+                boundarieOne = Board.FirstRow;
+                boundarieTwo = Board.SecondRow ;
+                boundarieThree = Board.FirstColumn;
+            }
+            //two right
+            if (i ==4){//6
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.SecondColumn ;
+                boundarieThree =Board.EighthRow ;
+            }if(i == 5){//-10
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.SecondColumn ;
+                boundarieThree = Board.FirstRow;
+            }
+            //two left
+            if (i ==6){//10
+                boundarieOne = Board.EighthColumn;
+                boundarieTwo = Board.SeventhColumn;
+                boundarieThree = Board.EighthRow ;
+            }if(i == 7){//-6
+                boundarieOne = Board.EighthColumn;
+                boundarieTwo = Board.SeventhColumn;
+                boundarieThree = Board.FirstRow;
+            }
+            WKNM(arayPos, i, boundarieOne, boundarieTwo , boundarieThree, values);
+        }  
+    }
+
+    public static void WKM(int arayPos , int value , long bOne , long bTwo , int[] values){
+        if (((bOne >>> arayPos) & 1L) == 0){
+
+            if (((bTwo >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos +values[value])) {
+                    Board.atackSquares |= (1L << arayPos + values[value]); 
                 }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos+17)){
-                        Board.atackSquares |= (1L << arayPos + 17);
-                        Board.captureSquares |= (1L << arayPos+17);
+                    if (checkIfSquareisUsedByEnemey(arayPos+values[value])){
+                        Board.atackSquares |= (1L << arayPos + values[value]);
+                        Board.captureSquares |= (1L << arayPos+values[value]);
                     }
                 }
             }
         }
-        //down two
-
-        if (Math.floor(arayPos / 8) != 0 && Math.floor(arayPos / 8) != 1){
-
-            if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
-                if (!checkIfSquareisUsed(arayPos -15)) {
-                    Board.atackSquares |= (1L << arayPos - 15); 
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos-15)){
-                        Board.atackSquares |= (1L << arayPos - 15);
-                        Board.captureSquares |= (1L << arayPos-15);
-                    }
-                }
-            }
-            if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
-                if (!checkIfSquareisUsed(arayPos -17)) {
-                    Board.atackSquares |= (1L << arayPos - 17);
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos-17)){
-                        Board.atackSquares |= (1L << arayPos - 17);
-                        Board.captureSquares |= (1L << arayPos-17);
-                    }
-                }
-            }
-            
-        }
-
-        //two right
-        if (((Board.FirstColumn >>> arayPos) & 1L) == 0&&((Board.SecondColumn >>> arayPos) & 1L) == 0){
-            
-            if (Math.floor(arayPos / 8) != 7){
-                if (!checkIfSquareisUsed(arayPos +6)) {
-                    Board.atackSquares |= (1L << arayPos + 6); 
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos+6)){
-                        Board.atackSquares |= (1L << arayPos + 6);
-                        Board.captureSquares |= (1L << arayPos+6);
-                    }
-                }
-            }
-
-            if (Math.floor(arayPos / 8) != 0){
-                if (!checkIfSquareisUsed(arayPos -10)) {
-                Board.atackSquares |= (1L << arayPos - 10);
-                }
-                else{
-                    if (checkIfSquareisUsedByEnemey(arayPos-10)){
-                        Board.atackSquares |= (1L << arayPos - 10);
-                        Board.captureSquares |= (1L << arayPos-10);
-                    }
-                }
-            }
-            
-        }
-
-        //two left
-        if (((Board.SeventhColumn >>> arayPos) & 1L) == 0&&((Board.EighthColumn >>> arayPos) & 1L) == 0){
-            
-            if (Math.floor(arayPos %8) != 0){
-                if (!checkIfSquareisUsed(arayPos +10)) {
-                    Board.atackSquares |= (1L << arayPos + 10); 
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos+10)){
-                        Board.atackSquares |= (1L << arayPos + 10);
-                        Board.captureSquares |= (1L << arayPos+10);
-                    }
-                }
-            }
-
-            if (Math.floor(arayPos / 8) != 0){
-                if (!checkIfSquareisUsed(arayPos -6)) {
-                    Board.atackSquares |= (1L << arayPos - 6);
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos-6)){
-                        Board.atackSquares |= (1L << arayPos - 6);
-                        Board.captureSquares |= (1L << arayPos-6);
-                    }
-                }
-            }
-        }
-
-
     }
 
     public static void WKMovement(int arayPos){
-        //right
-        if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
-            if (!checkIfSquareisUsed(arayPos -1)) {
-                Board.atackSquares |= (1L << arayPos - 1); 
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos-1)){
-                    Board.atackSquares |= (1L << arayPos - 1);
-                    Board.captureSquares |= (1L << arayPos-1);
-                }
-            }
 
-            if (Math.floor(arayPos/8) !=7){
-                if (!checkIfSquareisUsed(arayPos +7)) {
-                    Board.atackSquares |= (1L << arayPos + 7); 
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos+7)){
-                        Board.atackSquares |= (1L << arayPos + 7);
-                        Board.captureSquares |= (1L << arayPos+7);
-                    }
-                }
-            }
+        int[] values = {1, -1 , 7 ,-7, 8 , -8 , 9 , -9};
+        long boundarieOne =0;
+        long boundarieTwo =0;
 
-            if (Math.floor(arayPos/8) !=0){
-                if (!checkIfSquareisUsed(arayPos -9)) {
-                    Board.atackSquares |= (1L << arayPos -9); 
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos-9)){
-                        Board.atackSquares |= (1L << arayPos -9);
-                        Board.captureSquares |= (1L << arayPos-9);
-                    }
-                }
+        for (int i = 0; i < values.length ; i++){
+            if (i ==0){
+                boundarieOne = Board.EighthColumn; 
+                
+            }if(i == 1){
+                boundarieOne =Board.FirstColumn;
+                
+            }if (i ==2){
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.FirstColumn;
+            }if(i == 3){
+                boundarieOne = Board.FirstRow;
+                boundarieTwo = Board.EighthColumn;
             }
+            if (i ==4){
+                boundarieOne = Board.EighthRow; 
+                boundarieTwo = 0;
 
-            
-        }
-
-        //left
-        if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
-            if (!checkIfSquareisUsed(arayPos + 1)) {
-                Board.atackSquares |= (1L << arayPos + 1); 
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos + 1)){
-                    Board.atackSquares |= (1L << arayPos + 1);
-                    Board.captureSquares |= (1L << arayPos + 1);
-                } 
+            }if(i == 5){
+                boundarieOne =Board.FirstRow;
+                boundarieTwo = 0;
+            }if (i ==6){
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.EighthColumn;
+            }if(i == 7){
+                boundarieOne = Board.FirstRow;
+                boundarieTwo =Board.FirstColumn;
             }
-
-            if (Math.floor(arayPos/8) !=0){
-                if (!checkIfSquareisUsed(arayPos -7)) {
-                    Board.atackSquares |= (1L << arayPos - 7); 
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos-7)){
-                        Board.atackSquares |= (1L << arayPos - 7);
-                        Board.captureSquares |= (1L << arayPos-7);
-                    }
-                }
-            }
-
-            if (Math.floor(arayPos/8) !=7){
-                if (!checkIfSquareisUsed(arayPos +9)) {
-                    Board.atackSquares |= (1L << arayPos +9); 
-                }else{
-                    if (checkIfSquareisUsedByEnemey(arayPos+9)){
-                        Board.atackSquares |= (1L << arayPos +9);
-                        Board.captureSquares |= (1L << arayPos+9);
-                    }
-                }
-            }
-        }
-
-        if (Math.floor(arayPos/8) !=7){
-            if (!checkIfSquareisUsed(arayPos +8)) {
-                Board.atackSquares |= (1L << arayPos +8); 
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos+8)){
-                    Board.atackSquares |= (1L << arayPos +8);
-                    Board.captureSquares |= (1L << arayPos+8);
-                }
-            }
-        }
-
-        if (Math.floor(arayPos/8) !=0){
-            if (!checkIfSquareisUsed(arayPos - 8)) {
-                Board.atackSquares |= (1L << arayPos - 8); 
-            }else{
-                if (checkIfSquareisUsedByEnemey(arayPos - 8)){
-                    Board.atackSquares |= (1L << arayPos - 8);
-                    Board.captureSquares |= (1L << arayPos - 8);
-                } 
-            }
+            WKM(arayPos, i, boundarieOne,boundarieTwo,  values);
         }
 
         if (!WhiteKingHasBeenChecked && !WhiteKingHasBeenMoved){
@@ -674,163 +537,90 @@ public class MovementFuncion {
        
         
     }
-
-    public static void BBMouvement(int arayPos) {
-        if (((Board.FirstColumn >>> arayPos) & 1L) == 0) {
+    
+    public static void BBM(int arayPos , int value , long bOne , long bTwo , int[] values){
+        if (((bOne >>> arayPos) & 1L) == 0) {
 
             //top right  
-            if (((Board.EighthRow >>> arayPos) & 1L) == 0) {
+            if (((bTwo >>> arayPos) & 1L) == 0) {
                 for (int i = 1; i < 10; i++) {
 
-                    if (!checkIfSquareisUsed(arayPos + i * 7)) {
-                        Board.atackSquares |= (1L << arayPos + i * 7);
+                    if (!checkIfSquareisUsed(arayPos + i * values[value] )) {
+                        Board.atackSquares |= (1L << arayPos + i * values[value]);
                     } else {
-                        if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * 7)) {
-                            Board.atackSquares |= (1L << arayPos + i * 7);
-                            Board.captureSquares |= (1L << arayPos + i * 7);
+                        if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * values[value])) {
+                            Board.atackSquares |= (1L << arayPos + i * values[value]);
+                            Board.captureSquares |= (1L << arayPos + i * values[value]);
                         }
                         break;
                     }
-                    if (((Board.FirstColumn >>> arayPos+i*7) & 1L) != 0||((Board.EighthColumn >>> arayPos + i*7) & 1L) != 0 || ((Board.EighthRow >>> arayPos + i*7) & 1L) != 0 ) {
+                    if (((Board.boundaries >>> arayPos+i*values[value]) & 1L) != 0 ){
                         break;
                     }
                 }
             }
-
-            //down right
-            if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
-
-                for (int i = 1; i < 10; i++) {
-                    if (!checkIfSquareisUsed(arayPos - i * 9)) {
-                        Board.atackSquares |= (1L << arayPos - i * 9);
-                    } else {
-                        if (checkIfSquareisUsedByEnemeyBlack(arayPos - i * 9)) {
-                            Board.atackSquares |= (1L << arayPos - i * 9);
-                            Board.captureSquares |= (1L << arayPos - i * 9);
-                        }
-                        break;
-                    }
-
-                    if (((Board.FirstColumn >>> arayPos-i*9) & 1L) != 0 ||((Board.EighthColumn >>> arayPos-i*9) & 1L) != 0 || ((Board.FirstRow >>> arayPos-i*9) & 1L) != 0) {
-                        break;
-                    }
-                }
-            }
-
         }
+    }
+    
+    public static void BBMouvement(int arayPos) {
 
-        if (((Board.EighthColumn >>> arayPos) & 1L) == 0) {
-            //down left
-            if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
-                for (int i = 1; i < 10; i++) {
+        int[] values = {7, -9 , -7 ,9};
+        long boundarieOne =0;
+        long boundarieTwo = 0 ;
 
-                    if (!checkIfSquareisUsed(arayPos - i * 7)) {
-                        Board.atackSquares |= (1L << arayPos - i * 7);
-                    } else {
-                        if (checkIfSquareisUsedByEnemeyBlack(arayPos - i * 7)) {
-                            Board.atackSquares |= (1L << arayPos - i * 7);
-                            Board.captureSquares |= (1L << arayPos - i * 7);
-                        }
-                        break;
-                    }
-                    if (((Board.FirstColumn >>> arayPos-i*7) & 1L) != 0||((Board.EighthColumn >>> arayPos - i*7) & 1L) != 0 || ((Board.EighthRow >>> arayPos - i*7) & 1L) != 0 ) {
-                        break;
-                    }
-
-                }
+        for (int i = 0; i < values.length ; i++){
+            if (i ==0){
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.EighthRow;
+            }if(i == 1){
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.FirstRow;
+            }if (i ==2){
+                boundarieOne = Board.EighthColumn;
+                boundarieTwo = Board.FirstRow;
+            }if(i == 3){
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.EighthColumn;
             }
+            BBM(arayPos, i, boundarieOne, boundarieTwo, values);
+        }        
+    }
 
-            //top left
-            if (((Board.EighthRow >>> arayPos) & 1L) == 0) {
-                for (int i = 1; i < 10; i++) {
-
-                    if (!checkIfSquareisUsed(arayPos + i * 9)) {
-                        Board.atackSquares |= (1L << arayPos + i * 9);
-                    } else {
-                        if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * 9)) {
-                            Board.atackSquares |= (1L << arayPos + i * 9);
-                            Board.captureSquares |= (1L << arayPos + i * 9);
-                        }
-                        break;
+    public static void BRM(int arayPos , int value , long bOne , int[] values){
+        if (((bOne >>> arayPos) & 1L) == 0) {
+            for (int i = 1; i < 9; i++) {
+                if (!checkIfSquareisUsed(arayPos + i *values[value])) {
+                    Board.atackSquares |= (1L << arayPos + i * values[value]);
+                } else {
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * values[value])) {
+                        Board.atackSquares |= (1L << arayPos + i * values[value]);
+                        Board.captureSquares |= (1L << arayPos + i * values[value]);
                     }
-                    if (((Board.FirstColumn >>> arayPos+i*9) & 1L) != 0 ||((Board.EighthColumn >>> arayPos+i*9) & 1L) != 0 || ((Board.FirstRow >>> arayPos+i*9) & 1L) != 0) {
-                        break;
-                    }
+                    break;
                 }
-            }
+                if (((bOne >>> arayPos+i*values[value]) & 1L) != 0) {break;}
 
+            }
         }
     }
 
     public static void BRMouvement(int arayPos) {
-        // top
-        if (((Board.EighthRow >>> arayPos) & 1L) == 0) {
-            for (int i = 1; i < 9; i++) {
-                if (!checkIfSquareisUsed(arayPos + i * 8)) {
-                    Board.atackSquares |= (1L << arayPos + i * 8);
-                } else {
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * 8)) {
-                        Board.atackSquares |= (1L << arayPos + i * 8);
-                        Board.captureSquares |= (1L << arayPos + i * 8);
-                    }
-                    break;
-                }
-                if (((Board.EighthRow >>> arayPos+i*8) & 1L) != 0) {break;}
+        int[] values = {8, -8 , 1 ,-1};
+        long boundarieOne =0;
 
+        for (int i = 0; i < values.length ; i++){
+            if (i ==0){
+                boundarieOne = Board.EighthRow; 
+            }if(i == 1){
+                boundarieOne =Board.FirstRow;
+            }if (i ==2){
+                boundarieOne = Board.EighthColumn;
+            }if(i == 3){
+                boundarieOne = Board.FirstColumn;
             }
-        }
-        // down
-        if (((Board.FirstRow >>> arayPos) & 1L)==0) {
-            for (int i = 1; i < 9; i++) {
-                if (!checkIfSquareisUsed(arayPos - i * 8)) {
-                    Board.atackSquares |= (1L << arayPos - i * 8);
-                } else {
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos - i * 8)) {
-                        Board.atackSquares |= (1L << arayPos - i * 8);
-                        Board.captureSquares |= (1L << arayPos - i * 8);
-                    }
-                    break;
-                }
-                if (((Board.FirstRow >>> arayPos - i *8) & 1L) != 0) {break;}
-            }
-        }
-        //left
-        if (((Board.EighthColumn >>> arayPos) & 1L) == 0) {
-            for (int i = 1; i < 9; i++) {
-
-                if (!checkIfSquareisUsed(arayPos + i)) {
-                    Board.atackSquares |= (1L << arayPos + i);
-                } else {
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos + i)) {
-                        Board.atackSquares |= (1L << arayPos + i);
-                        Board.captureSquares |= (1L << arayPos + i);
-                    }
-                    break;
-                }
-                if (((Board.EighthColumn >>> arayPos+i) & 1L) != 0) {
-                    break;
-                }
-            }
+            BRM(arayPos, i, boundarieOne,  values);
         }
 
-        //right
-        if (((Board.FirstColumn >>> arayPos) & 1L)==0) {
-            for (int i = 1; i < 9; i++) {
-
-                if (!checkIfSquareisUsed(arayPos - i)) {
-                    Board.atackSquares |= (1L << arayPos - i);
-                } else {
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos - i)) {
-                        Board.atackSquares |= (1L << arayPos - i);
-                        Board.captureSquares |= (1L << arayPos - i);
-                    }
-                    break;
-                }
-                if (((Board.FirstColumn >>> arayPos-i) & 1L)!=0) {
-                    break;
-                }
-            }
-        }
     }
 
     public static void BQMouvement(int arayPos){
@@ -838,208 +628,134 @@ public class MovementFuncion {
         BRMouvement(arayPos);
     }
 
+    public static void BKNM(int arayPos , int value , long bOne , long bTwo ,long bThree, int[] values){
+        if (((bOne >>> arayPos) & 1L) == 0&&((bTwo >>> arayPos) & 1L) == 0){
+            
+             if (((bThree >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos +values[value])) {
+                    Board.atackSquares |= (1L << arayPos + values[value]);
+                }else{
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+values[value])){
+                        Board.atackSquares |= (1L << arayPos + values[value]);
+                        Board.captureSquares |= (1L << arayPos+values[value]);
+                    }
+                }
+            }
+        }
+    }
+
     public static void BKNMovement(int arayPos){
-        //top two 
-        if (Math.floor(arayPos / 8) != 7 && Math.floor(arayPos / 8) != 6){
-            if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
-                if (!checkIfSquareisUsed(arayPos +15)) {
-                    Board.atackSquares |= (1L << arayPos + 15); 
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+15)){
-                        Board.atackSquares |= (1L << arayPos + 15);
-                        Board.captureSquares |= (1L << arayPos+15);
-                    }
-                }
+        
+        int[] values = {15, 17, -15, -17, 6, -10, 10, -6 }; 
+        long boundarieOne =0;
+        long boundarieTwo = 0 ;
+        long boundarieThree = 0 ;
+
+        for (int i = 0; i < values.length ; i++){
+            //top two
+            if (i ==0){//15
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.SeventhRow;
+                boundarieThree = Board.FirstColumn ;
+            }if(i == 1){//17
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.SeventhRow;
+                boundarieThree = Board.EighthColumn;
             }
-            if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
-                if (!checkIfSquareisUsed(arayPos +17)) {
-                    Board.atackSquares |= (1L << arayPos + 17);
+            //down two
+            if (i ==2){//-15
+                boundarieOne = Board.FirstRow;
+                boundarieTwo = Board.SecondRow ;
+                boundarieThree =Board.EighthColumn ;
+            }if(i == 3){//-17
+                boundarieOne = Board.FirstRow;
+                boundarieTwo = Board.SecondRow ;
+                boundarieThree = Board.FirstColumn;
+            }
+            //two right
+            if (i ==4){//6
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.SecondColumn ;
+                boundarieThree =Board.EighthRow ;
+            }if(i == 5){//-10
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.SecondColumn ;
+                boundarieThree = Board.FirstRow;
+            }
+            //two left
+            if (i ==6){//10
+                boundarieOne = Board.EighthColumn;
+                boundarieTwo = Board.SeventhColumn;
+                boundarieThree = Board.EighthRow ;
+            }if(i == 7){//-6
+                boundarieOne = Board.EighthColumn;
+                boundarieTwo = Board.SeventhColumn;
+                boundarieThree = Board.FirstRow;
+            }
+            BKNM(arayPos, i, boundarieOne, boundarieTwo , boundarieThree, values);
+        }  
+    }
+
+    public static void BKM(int arayPos , int value , long bOne , long bTwo , int[] values){
+        if (((bOne >>> arayPos) & 1L) == 0){
+
+            if (((bTwo >>> arayPos) & 1L) == 0){
+                if (!checkIfSquareisUsed(arayPos +values[value])) {
+                    Board.atackSquares |= (1L << arayPos + values[value]); 
                 }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+17)){
-                        Board.atackSquares |= (1L << arayPos + 17);
-                        Board.captureSquares |= (1L << arayPos+17);
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+values[value])){
+                        Board.atackSquares |= (1L << arayPos + values[value]);
+                        Board.captureSquares |= (1L << arayPos+values[value]);
                     }
                 }
             }
         }
-        //down two
-
-        if (Math.floor(arayPos / 8) != 0 && Math.floor(arayPos / 8) != 1){
-
-            if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
-                if (!checkIfSquareisUsed(arayPos -15)) {
-                    Board.atackSquares |= (1L << arayPos - 15); 
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-15)){
-                        Board.atackSquares |= (1L << arayPos - 15);
-                        Board.captureSquares |= (1L << arayPos-15);
-                    }
-                }
-            }
-            if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
-                if (!checkIfSquareisUsed(arayPos -17)) {
-                    Board.atackSquares |= (1L << arayPos - 17);
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-17)){
-                        Board.atackSquares |= (1L << arayPos - 17);
-                        Board.captureSquares |= (1L << arayPos-17);
-                    }
-                }
-            }
-            
-        }
-
-        //two right
-        if (((Board.FirstColumn >>> arayPos) & 1L) == 0&&((Board.SecondColumn >>> arayPos) & 1L) == 0){
-            if (Math.floor(arayPos / 8) != 7){
-                if (!checkIfSquareisUsed(arayPos +6)) {
-                    Board.atackSquares |= (1L << arayPos + 6); 
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+6)){
-                        Board.atackSquares |= (1L << arayPos + 6);
-                        Board.captureSquares |= (1L << arayPos+6);
-                    }
-                }
-            }
-
-            if (Math.floor(arayPos / 8) != 0){
-                if (!checkIfSquareisUsed(arayPos -10)) {
-                Board.atackSquares |= (1L << arayPos - 10);
-                }
-                else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-10)){
-                        Board.atackSquares |= (1L << arayPos - 10);
-                        Board.captureSquares |= (1L << arayPos-10);
-                    }
-                }
-            }
-            
-        }
-
-        //two left
-        if (((Board.SeventhColumn >>> arayPos) & 1L) == 0&&((Board.EighthColumn >>> arayPos) & 1L) == 0){
-            
-            if (Math.floor(arayPos / 8) != 7){
-                if (!checkIfSquareisUsed(arayPos +10)) {
-                    Board.atackSquares |= (1L << arayPos + 10); 
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+10)){
-                        Board.atackSquares |= (1L << arayPos + 10);
-                        Board.captureSquares |= (1L << arayPos+10);
-                    }
-                }
-            }
-
-            if (Math.floor(arayPos / 8) != 0){
-                if (!checkIfSquareisUsed(arayPos -6)) {
-                    Board.atackSquares |= (1L << arayPos - 6);
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-6)){
-                        Board.atackSquares |= (1L << arayPos - 6);
-                        Board.captureSquares |= (1L << arayPos-6);
-                    }
-                }
-            }
-        }
-
-
     }
 
     public static void BKMovement(int arayPos){
-        //right
-        if (((Board.FirstColumn >>> arayPos) & 1L) == 0){
-            if (!checkIfSquareisUsed(arayPos -1)) {
-                Board.atackSquares |= (1L << arayPos - 1); 
-            }else{
-                if (checkIfSquareisUsedByEnemeyBlack(arayPos-1)){
-                    Board.atackSquares |= (1L << arayPos - 1);
-                    Board.captureSquares |= (1L << arayPos-1);
-                }
-            }
 
-            if (Math.floor(arayPos/8) !=7){
-                if (!checkIfSquareisUsed(arayPos +7)) {
-                    Board.atackSquares |= (1L << arayPos + 7); 
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+7)){
-                        Board.atackSquares |= (1L << arayPos + 7);
-                        Board.captureSquares |= (1L << arayPos+7);
-                    }
-                }
-            }
+        int[] values = {1, -1 , 7 ,-7, 8 , -8 , 9 , -9};
+        long boundarieOne =0;
+        long boundarieTwo =0;
 
-            if (Math.floor(arayPos/8) !=0){
-                if (!checkIfSquareisUsed(arayPos -9)) {
-                    Board.atackSquares |= (1L << arayPos -9); 
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-9)){
-                        Board.atackSquares |= (1L << arayPos -9);
-                        Board.captureSquares |= (1L << arayPos-9);
-                    }
-                }
+        for (int i = 0; i < values.length ; i++){
+            if (i ==0){
+                boundarieOne = Board.EighthColumn; 
+                
+            }if(i == 1){
+                boundarieOne =Board.FirstColumn;
+                
+            }if (i ==2){
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.FirstColumn;
+            }if(i == 3){
+                boundarieOne = Board.FirstRow;
+                boundarieTwo = Board.EighthColumn;
             }
-        }
-        //left
-        if (((Board.EighthColumn >>> arayPos) & 1L) == 0){
-            if (!checkIfSquareisUsed(arayPos + 1)) {
-                Board.atackSquares |= (1L << arayPos + 1); 
-            }else{
-                if (checkIfSquareisUsedByEnemeyBlack(arayPos + 1)){
-                    Board.atackSquares |= (1L << arayPos + 1);
-                    Board.captureSquares |= (1L << arayPos + 1);
-                } 
-            }
+            if (i ==4){
+                boundarieOne = Board.EighthRow; 
+                boundarieTwo = 0;
 
-            if (Math.floor(arayPos/8) !=0){
-                if (!checkIfSquareisUsed(arayPos -7)) {
-                    Board.atackSquares |= (1L << arayPos - 7); 
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos-7)){
-                        Board.atackSquares |= (1L << arayPos - 7);
-                        Board.captureSquares |= (1L << arayPos-7);
-                    }
-                }
+            }if(i == 5){
+                boundarieOne =Board.FirstRow;
+                boundarieTwo = 0;
+            }if (i ==6){
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.EighthColumn;
+            }if(i == 7){
+                boundarieOne = Board.FirstRow;
+                boundarieTwo =Board.FirstColumn;
             }
-
-            if (Math.floor(arayPos/8) !=7){
-                if (!checkIfSquareisUsed(arayPos +9)) {
-                    Board.atackSquares |= (1L << arayPos +9); 
-                }else{
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos+9)){
-                        Board.atackSquares |= (1L << arayPos +9);
-                        Board.captureSquares |= (1L << arayPos+9);
-                    }
-                }
-            }
+            BKM(arayPos, i, boundarieOne,boundarieTwo,  values);
         }
 
-        if (Math.floor(arayPos/8) !=7){
-            if (!checkIfSquareisUsed(arayPos +8)) {
-                Board.atackSquares |= (1L << arayPos +8); 
-            }else{
-                if (checkIfSquareisUsedByEnemeyBlack(arayPos+8)){
-                    Board.atackSquares |= (1L << arayPos +8);
-                    Board.captureSquares |= (1L << arayPos+8);
-                }
-            }
+        if (!WhiteKingHasBeenChecked && !WhiteKingHasBeenMoved){
+            checkWhiteCastling();
         }
 
-        if (Math.floor(arayPos/8) !=0){
-            if (!checkIfSquareisUsed(arayPos - 8)) {
-                Board.atackSquares |= (1L << arayPos - 8); 
-            }else{
-                if (checkIfSquareisUsedByEnemeyBlack(arayPos - 8)){
-                    Board.atackSquares |= (1L << arayPos - 8);
-                    Board.captureSquares |= (1L << arayPos - 8);
-                } 
-            }
-        }
-
-        if (!blackKingHasBeenChecked && !blackKingHasBeenMoved){
-            checkBlackCastling();
-        }
+        
     }
-
+    
     //mooving funcions 
 
     public static boolean checkIfSquareisUsedByEnemey(int i){
@@ -1192,144 +908,111 @@ public class MovementFuncion {
         }
     }
 
+    public static void WCBM(int arayPos , int value , long bOne , long bTwo , int[] values , int piece ,long checkSquares , boolean piecePased ){
+        if (((bOne >>> arayPos) & 1L) == 0) {
+            //top right  
+            if (((bTwo >>> arayPos) & 1L) == 0) {
+                for (int i = 1; i < 10; i++) {
+                    
+                    checkSquares |= (1L << arayPos + i*values[value]);
+                    
+                    if (checkIfSquareisUsedByEnemeyBlack(arayPos + i*values[value])){
+                        piecePased = true;
+                    }
+                    if (  checkIfSquareisUsedByEnemey(arayPos + i * values[value])) {
+                        if (returnPiece(arayPos + i*values[value])== 8 ||returnPiece(arayPos + i*values[value]) ==10){
+                            Board.checkSquares += checkSquares;
+                            if (!piecePased){
+                                whiteIsInCheck = true;
+                            }
+                        }
+                        break;
+                    }
+                    if (((Board.boundaries >>> arayPos+i*values[value]) & 1L) != 0 ){
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    public static void WCRM(int arayPos , int value , long bOne , int[] values , int piece ,long checkSquares , boolean piecePased ){
+        if (((bOne >>> arayPos) & 1L) == 0) {
+            for (int i = 1; i < 9; i++) {
+
+                checkSquares |= (1L << arayPos + i*values[value]);
+
+
+                if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * values[value])) {
+                    piecePased = true;
+                }
+                if (  checkIfSquareisUsedByEnemey(arayPos + i * values[value])) {
+                    if (returnPiece(arayPos + i*values[value])== 9 ||returnPiece(arayPos + i*values[value]) ==10){
+                        Board.checkSquares += checkSquares;
+                        if (!piecePased){
+                            whiteIsInCheck = true;
+                        }
+                    }
+                    break;
+                }
+
+                if (((bOne >>> arayPos+i*values[value]) & 1L) != 0) {break;}
+
+            }
+        }
+    }
+
     public static void checkWhiteCheck(int arayPos){
-        int piece ;
+        int piece =0 ;
         boolean piecePased = false;
         long checkSquares = 0;
         whiteIsInCheck = false;
-        // Check bishop check
-        if (((Board.FirstColumn >>> arayPos) & 1L) == 0) {
-            
-            //top right  
-            if (((Board.EighthRow >>> arayPos) & 1L) == 0) {
-                for (int i = 1; i < 10; i++) {
+        int[] Bvalues = {7, -9 , -7 ,9};
+        int[] Rvalues = {8, -8 , 1 ,-1};
+        long boundarieOne =0;
+        long boundarieTwo = 0 ;
 
-                    
-                    checkSquares |= (1L << arayPos + i*7);
-                    
-                    
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos + i*7)){
-                        piecePased = true;
-                    }
-
-                    if (  checkIfSquareisUsedByEnemey(arayPos + i * 7)) {
-                        
-                        if (returnPiece(arayPos + i*7)== 8 ||returnPiece(arayPos + i*7) ==10){
-                            Board.checkSquares += checkSquares;
-                            if (!piecePased){
-                                whiteIsInCheck = true;
-                            }
-                        }
-                        
-                        break;
-                    }
-                    if (((Board.FirstColumn >>> arayPos+i*7) & 1L) != 0||((Board.EighthColumn >>> arayPos + i*7) & 1L) != 0 || ((Board.EighthRow >>> arayPos + i*7) & 1L) != 0 ){
-                        break;
-                    }
-                }
+        for (int i = 0; i < Bvalues.length ; i++){
+            if (i ==0){
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.EighthRow;
+            }if(i == 1){
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = Board.FirstRow;
+            }if (i ==2){
+                boundarieOne = Board.EighthColumn;
+                boundarieTwo = Board.FirstRow;
+            }if(i == 3){
+                boundarieOne = Board.EighthRow;
+                boundarieTwo = Board.EighthColumn;
             }
-            checkSquares = 0;
-            piecePased = false;
-            //down right
-            if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
-
-                for (int i = 1; i < 10; i++) {
-
-                    
-                    checkSquares |= (1L << arayPos -i*9);
-                    
-
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos - i*9)){
-                        piecePased = true;
-                    }
-
-                    if (checkIfSquareisUsed(arayPos - i * 9) && checkIfSquareisUsedByEnemey(arayPos - i * 9)) {
-                        piece = returnPiece(arayPos -i*9);
-                        if (piece ==8 || piece ==10){
-                            Board.checkSquares += checkSquares;
-                            if (!piecePased){
-                                whiteIsInCheck = true;
-                            }
-
-                        }
-                        break;
-                    }
-
-                    if (((Board.FirstColumn >>> arayPos-i*9) & 1L) != 0 ||((Board.EighthColumn >>> arayPos-i*9) & 1L) != 0 || ((Board.FirstRow >>> arayPos-i*9) & 1L) != 0) {
-                        break;
-                    }
-                }
-            }
+            WCBM(arayPos , i,boundarieOne,boundarieTwo, Bvalues ,piece , checkSquares, piecePased);
 
             checkSquares = 0;
             piecePased = false;
+        }  
 
+        for (int i = 0; i < Rvalues.length ; i++){
+            if (i ==0){
+                boundarieOne = Board.EighthRow; 
+                boundarieTwo = 0;
+            }if(i == 1){
+                boundarieOne =Board.FirstRow;
+                boundarieTwo = 0;
+            }if (i ==2){
+                boundarieOne = Board.EighthColumn;
+                boundarieTwo = 0;
+            }if(i == 3){
+                boundarieOne = Board.FirstColumn;
+                boundarieTwo = 0;
+            }
+            WCRM(arayPos , i,boundarieOne, Rvalues ,piece , checkSquares, piecePased);
+            checkSquares = 0;
+            piecePased = false;
         }
-        if (((Board.EighthColumn >>> arayPos) & 1L) == 0) {
-            //down left
-            if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
-                for (int i = 1; i < 10; i++) {
-                
-                    
-                    checkSquares  |= (1L << arayPos - i*7);
-                    
 
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos - i*7)){
-                        piecePased = true;
-                    }
 
-                    if ( checkIfSquareisUsedByEnemey(arayPos - i * 7)) {
-                        piece = returnPiece(arayPos - i*7);
-                        if (piece == 8 || piece == 10 ){
-                            Board.checkSquares += checkSquares;
-                            if (!piecePased){
-                                whiteIsInCheck = true;
-                            }
-                        }
-                        break;
-                    }
-                    if (((Board.FirstColumn >>> arayPos-i*7) & 1L) != 0||((Board.EighthColumn >>> arayPos - i*7) & 1L) != 0 ||((Board.FirstRow >>> arayPos -i*7)& 1L) != 0) {
-                        break;
-                    }
-
-                }
-            }
-
-            checkSquares = 0;
-            piecePased = false;
-
-            //top left
-            if (((Board.EighthRow >>> arayPos )& 1L)==0) {
-                for (int i = 1; i < 10; i++) {
-
-                    
-                    checkSquares |= (1L << arayPos +i*9);
-                    
-
-                    if (checkIfSquareisUsedByEnemeyBlack(arayPos +i*9)){
-                        piecePased = true;
-                    } 
-
-                    if ( checkIfSquareisUsedByEnemey(arayPos + i * 9)) {
-                        piece = returnPiece(arayPos+ i*9) ;
-
-                        if (piece == 8 || piece == 10){
-                            Board.checkSquares += checkSquares;
-                            if (!piecePased){
-                                whiteIsInCheck = true;
-                            }
-                        }
-                        
-                        break;
-                    }
-                    if (((Board.FirstColumn >>> arayPos+i*9) & 1L) != 0 ||((Board.EighthColumn >>> arayPos+i*9) & 1L) != 0 || ((Board.EighthRow >>> arayPos+i*9) & 1L) != 0) {
-                        break;
-                    }
-                }
-            }
-            System.out.println(whiteIsInCheck);
-
-        }
+        System.out.println(whiteIsInCheck);
     }
 
     public static int returnPiece(int i ){
@@ -1378,5 +1061,3 @@ public class MovementFuncion {
     }
 
 }
-
-

@@ -115,7 +115,7 @@ public class Main extends JPanel implements ActionListener  {
 
                 if (((Board.checkSquares >>>  araypos) & 1L) != 0){g.setColor(new Color(255,0,0));}
                 
-
+                //if (Math.floor(araypos %8) != 0){g.setColor(new Color(255,0,0));}
                 g.fillRect(r*100 +100, c *100 +100, 100, 100);
                 
                g.setColor(new Color(0,0,0 , 25));
