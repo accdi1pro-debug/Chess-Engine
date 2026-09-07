@@ -27,6 +27,12 @@ public class Board{
 
     //all check squares
     public static long checkSquares;
+    public static long kingCheckSquares;
+
+    public static long whiteAtackSquares;
+    public static long BlackAtackSquares;
+
+    public static long allAtackSquares;
 
     // column
     public static long FirstColumn = 0x0101_0101_0101_0101L ;
@@ -50,4 +56,6 @@ public class Board{
 
     public static long boundaries = 0xff81_8181_8181_81ffL ;
 
+    public static boolean[] WEmpassentSquares = new boolean[64];
+    public static boolean[] BEmpassentSquares = new boolean[64];
 }

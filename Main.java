@@ -97,8 +97,6 @@ public class Main extends JPanel implements ActionListener  {
 
                 int araypos =63 -( (c)*8 + r);
 
-                
-
 
                 if (r %2 ==0){
                     g.setColor(new Color(119, 149, 86));
@@ -113,8 +111,10 @@ public class Main extends JPanel implements ActionListener  {
                     }
                 }
 
-                if (((Board.checkSquares >>>  araypos) & 1L) != 0){g.setColor(new Color(255,0,0));}
-                
+                //if (((Board.checkSquares >>>  araypos) & 1L) != 0){g.setColor(new Color(255,0,0));}
+                //if (Board.BEmpassentSquares[araypos]){g.setColor(new Color(255,0,0));}
+                //if (Board.WEmpassentSquares[araypos]){g.setColor(new Color(255,0,0));}
+                //if (((Board.whiteAtackSquares>>> araypos)& 1L ) == 1){g.setColor(new Color(255,0,0));}
                 //if (Math.floor(araypos %8) != 0){g.setColor(new Color(255,0,0));}
                 g.fillRect(r*100 +100, c *100 +100, 100, 100);
                 
