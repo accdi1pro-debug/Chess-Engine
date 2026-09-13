@@ -1,4 +1,4 @@
-public class MovementFuncion {
+public class MovementManager {
 
     public static int pieceMoved = 0;
     public static int pieceMovedPos = 0;
