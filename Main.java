@@ -21,6 +21,7 @@ public class Main extends JPanel implements ActionListener  {
     public Image blackQueen = new ImageIcon("src/Images/bq.png").getImage();
     public Image blackKing = new ImageIcon("src/Images/bK.png").getImage();
 
+    
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Chess");
@@ -41,8 +42,44 @@ public class Main extends JPanel implements ActionListener  {
                 if ((x>900 || y>900 )||(x<100 ||y<100)){
 
                     System.out.println("out of bound");
+                    if (MovementFuncion.whitePromotionUI){
+                        if (y>900){
+                            if (x>300 && x<700){
+                                if (x>600){
+                                    MovementFuncion.promotionPiece =4;
+                                }else if (x>500){
+                                    MovementFuncion.promotionPiece =3;
+                                }else if (x>400){
+                                    MovementFuncion.promotionPiece =2;
+                                }else if (x>300){
+                                    MovementFuncion.promotionPiece =1;
+                                }
+                                MovementFuncion.whitePromotion(MovementFuncion.promotionsquare);
+                            }
+                        }
+                    }
+                    if (MovementFuncion.blackPromotionUI){
+                        if (y<100){
+                            if (x>300 && x<700){
+                                if (x>600){
+                                    MovementFuncion.promotionPiece =4;
+                                }else if (x>500){
+                                    MovementFuncion.promotionPiece =3;
+                                }else if (x>400){
+                                    MovementFuncion.promotionPiece =2;
+                                }else if (x>300){
+                                    MovementFuncion.promotionPiece =1;
+                                }
+                                MovementFuncion.blackPromotion(MovementFuncion.promotionsquare);
+                            }
+                        }
+                    }
+                    System.out.println(MovementFuncion.promotionPiece );
+                    if (MovementFuncion.blackPromotionUI){
+                        
+                    }
 
-                }else{
+                }else if (!MovementFuncion.blackPromotionUI && !MovementFuncion.whitePromotionUI ){
 
                     int row = (int) Math.floor(-newY/100);
 
@@ -95,7 +132,7 @@ public class Main extends JPanel implements ActionListener  {
         for (int c = 0; c < 8; c++) {
             for (int r = 0; r < 8; r++) {
 
-                int araypos =63 -( (c)*8 + r);
+                int araypos = 63-(c*8 + r);
 
 
                 if (r %2 ==0){
@@ -136,6 +173,21 @@ public class Main extends JPanel implements ActionListener  {
                 g.drawString(String.valueOf(araypos), (r ) *100 +100, (c ) * 100 + 200);
             }
         }
+
+        if (MovementFuncion.blackPromotionUI){
+            g.drawImage(blackKnight, 300, 0, 100, 100, this);
+            g.drawImage(blackRook, 400, 0, 100, 100, this);
+            g.drawImage(blackQueen, 500, 0, 100, 100, this);
+            g.drawImage(blackBishop, 600, 0, 100, 100, this);
+        }
+        
+        if (MovementFuncion.whitePromotionUI){
+            g.drawImage(whiteKnight, 300, 900, 100, 100, this);
+            g.drawImage(whiteRook, 400, 900, 100, 100, this);
+            g.drawImage(whiteQueen, 500, 900, 100, 100, this);
+            g.drawImage(whiteBishop, 600, 900, 100, 100, this);
+        }
+
         int count = 0;
 
         int x = 800;
@@ -159,6 +211,8 @@ public class Main extends JPanel implements ActionListener  {
         
         
     }
+
+    
 
     public void drawWhitePieces(int x,int y,  int i , Graphics g ){
 

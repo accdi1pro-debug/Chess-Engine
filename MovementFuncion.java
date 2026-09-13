@@ -19,6 +19,19 @@ public class MovementFuncion {
 
     public static boolean gameFinished = false ;
 
+    public static boolean whitePromotionUI = false;
+    public static boolean blackPromotionUI = false;
+
+    public static int promotionPiece = 0;
+    public static int promotionsquare = 0;
+
+    public static boolean WhiteLeftRookHasBeenMoved = false;
+    public static boolean WhiteRightRookHasBeenMoved = false;
+
+    public static boolean BlackLeftRookHasBeenMoved = false;
+    public static boolean BlackRightRookHasBeenMoved = false;
+
+
     public static void showAtackSquare(int pieceType , int arayPos){
         if (gameFinished){
             System.out.println("the game is finished " + turn + " lost");
@@ -91,6 +104,12 @@ public class MovementFuncion {
                 curentBoard = Board.whiteBishops ;
             }
             if (pieceMoved == 3){
+                if (pieceMovedPos == 0){
+                    WhiteRightRookHasBeenMoved=true;
+                }
+                if (pieceMovedPos == 7){
+                    WhiteLeftRookHasBeenMoved=true;
+                }
                 curentBoard = Board.whiteRoocks ;
             }
             if (pieceMoved == 4){
@@ -128,6 +147,12 @@ public class MovementFuncion {
                 curentBoard = Board.blackBishops ;
             }
             if (pieceMoved == 9){
+                if (pieceMovedPos == 56){
+                    BlackRightRookHasBeenMoved=true;
+                }
+                if (pieceMovedPos == 63){
+                    BlackLeftRookHasBeenMoved=true;
+                }
                 curentBoard = Board.blackRoocks ;
             }
             if (pieceMoved == 10){
@@ -183,6 +208,18 @@ public class MovementFuncion {
 
         curentBoard ^= (1L << arayPos) ;
 
+
+        if (pieceMoved == 1 && ((Board.EighthRow >>> arayPos ) &1L ) == 1 ){
+            
+            whitePromotionUI = true;
+            promotionsquare = arayPos;
+         
+        }
+        if (pieceMoved == 7 && ((Board.FirstRow >>> arayPos ) &1L ) == 1 ){
+            blackPromotionUI = true;
+            promotionsquare = arayPos;
+        }
+
         // Update the board with the moved piece
         if (pieceMoved == 1){
             Board.whitePawns = curentBoard;
@@ -227,10 +264,16 @@ public class MovementFuncion {
         updateBlackBoard();
         if (turn == true){
             checkBlackCheck(blackKingPos);
+            if (blackIsInCheck){
+                blackKingHasBeenChecked = true;
+            }
             WhiteAtackSquares();
             turn = false;
         }else{
             checkWhiteCheck(whiteKingPos);
+            if (whiteIsInCheck){
+                WhiteKingHasBeenChecked = true;
+            }
             BlackAtackSquares();
             turn=true;
         }
@@ -246,6 +289,7 @@ public class MovementFuncion {
         Board.captureSquares = 0;
         pieceMoved = 0;
         pieceMovedPos = 0;
+
         
     }
     
@@ -1184,20 +1228,20 @@ public class MovementFuncion {
     }
 
     public static void checkWhiteCastling(){
-        if ((Board.whiteRoocks & 1L ) != 0 && !checkIfSquareisUsed(1) && !checkIfSquareisUsed(2)) {
+        if ((Board.whiteRoocks & 1L ) != 0 && !checkIfSquareisUsed(1) && !checkIfSquareisUsed(2) && !WhiteRightRookHasBeenMoved) {
             Board.atackSquares |= (1L << 1);
         }
-        if (((Board.whiteRoocks >>> 7) & 1L) != 0 && !checkIfSquareisUsed(6) && !checkIfSquareisUsed(5) && !checkIfSquareisUsed(4)) {
+        if (((Board.whiteRoocks >>> 7) & 1L) != 0 && !checkIfSquareisUsed(6) && !checkIfSquareisUsed(5) && !checkIfSquareisUsed(4) && !WhiteLeftRookHasBeenMoved) {
             Board.atackSquares |= (1L << 5);
         }
     }
-    
+     
     public static void checkBlackCastling(){
        
-        if (((Board.blackRoocks >>> 56) & 1L) != 0 && !checkIfSquareisUsed(57) && !checkIfSquareisUsed(58)) {
+        if (((Board.blackRoocks >>> 56) & 1L) != 0 && !checkIfSquareisUsed(57) && !checkIfSquareisUsed(58)&& !BlackLeftRookHasBeenMoved) {
             Board.atackSquares |= (1L << 57);
         }
-        if (((Board.blackRoocks >>> 63) & 1L) != 0 && !checkIfSquareisUsed(62) && !checkIfSquareisUsed(61) && !checkIfSquareisUsed(60)) {
+        if (((Board.blackRoocks >>> 63) & 1L) != 0 && !checkIfSquareisUsed(62) && !checkIfSquareisUsed(61) && !checkIfSquareisUsed(60) && !BlackRightRookHasBeenMoved) {
             Board.atackSquares |= (1L << 61);
         }
     }
@@ -2134,4 +2178,31 @@ public class MovementFuncion {
         }
     }
 
+    public static void blackPromotion(int arayPos) {
+        Board.blackPawns ^= (1L << arayPos);
+
+        switch (promotionPiece) {
+            case 1 -> Board.blackKnights ^= (1L << arayPos);
+            case 2 -> Board.blackRoocks ^= (1L << arayPos);
+            case 3 -> Board.blackQueen ^= (1L << arayPos);
+            default -> Board.blackBishops ^= (1L << arayPos);
+        }
+        blackPromotionUI = false;
+
+        promotionPiece = 0;
+    }
+
+    public static void whitePromotion(int arayPos) {
+        Board.whitePawns ^= (1L << arayPos);
+
+        switch (promotionPiece) {
+            case 1 -> Board.whiteKnights ^= (1L << arayPos);
+            case 2 -> Board.whiteRoocks ^= (1L << arayPos);
+            case 3 -> Board.whiteQueen ^= (1L << arayPos);
+            default -> Board.whiteBishops ^= (1L << arayPos);
+        }
+
+        promotionPiece = 0;
+        whitePromotionUI = false;
+    }
 }
