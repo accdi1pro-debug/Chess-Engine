@@ -31,6 +31,9 @@ public class MovementManager {
     public static boolean BlackLeftRookHasBeenMoved = false;
     public static boolean BlackRightRookHasBeenMoved = false;
 
+    public static boolean BlackAi = true;
+
+    public static int count = 0;
 
     public static void showAtackSquare(int pieceType , int arayPos){
         if (gameFinished){
@@ -61,25 +64,27 @@ public class MovementManager {
             if (pieceType == 6){
                 WKMovement(arayPos);
             }
-        }else{
-            if (pieceType == 7){
+        } else {
+
+            if (pieceType == 7) {
                 BPMouvement(arayPos);
             }
-            if (pieceType == 8){
+            if (pieceType == 8) {
                 BBMouvement(arayPos);
             }
-            if (pieceType == 9){
+            if (pieceType == 9) {
                 BRMouvement(arayPos);
             }
-            if (pieceType == 10){
+            if (pieceType == 10) {
                 BQMouvement(arayPos);
             }
-            if (pieceType == 11){
+            if (pieceType == 11) {
                 BKNMovement(arayPos);
             }
-            if (pieceType == 12){
+            if (pieceType == 12) {
                 BKMovement(arayPos);
             }
+
         }
 
     }
@@ -120,12 +125,12 @@ public class MovementManager {
             }
             if (pieceMoved == 6){
                 if (!WhiteKingHasBeenChecked && !WhiteKingHasBeenMoved){
-                    if (arayPos == 1){
+                    if (arayPos == 1&& !WhiteRightRookHasBeenMoved){
                         Board.whiteRoocks ^= (1L) ;
 
                         Board.whiteRoocks ^= (1L << 2) ;
                     }
-                    if (arayPos == 5){
+                    if (arayPos == 5 && !WhiteLeftRookHasBeenMoved){
                         Board.whiteRoocks ^= (1L << 7) ;
 
                         Board.whiteRoocks ^= (1L << 4) ;
@@ -163,12 +168,12 @@ public class MovementManager {
             }
             if (pieceMoved == 12){
                 if (!blackKingHasBeenChecked && !blackKingHasBeenMoved){
-                    if (arayPos == 61){
+                    if (arayPos == 61 && !BlackLeftRookHasBeenMoved){
                         Board.blackRoocks ^= (1L << 63) ;
 
                         Board.blackRoocks ^= (1L << 60) ;
                     }
-                    if (arayPos == 57){
+                    if (arayPos == 57 && !BlackRightRookHasBeenMoved){
                         Board.blackRoocks ^= (1L << 56) ;
 
                         Board.blackRoocks ^= (1L << 58) ;
@@ -179,14 +184,19 @@ public class MovementManager {
                 curentBoard = Board.blackKing ;
             }
         }
-        
-        
+
+
+        if (pieceMoved != 1||pieceMoved !=7){
+            count ++;
+        }else{
+            count = 0;
+        }
 
         if (((Board.captureSquares >>> arayPos) & 1L) != 0) {
-
+            count =0;
             if (turn){
                 
-                if ( Board.BEmpassentSquares[arayPos-8]){
+                if (arayPos>= 8 &&  Board.BEmpassentSquares[arayPos-8] && pieceMoved == 1 && (pieceMovedPos == arayPos+1 ||pieceMovedPos == arayPos-1) ) {
                     java.util.Arrays.fill(Board.BEmpassentSquares, false);
                     removePiece(arayPos-8);
                 }else{
@@ -194,7 +204,7 @@ public class MovementManager {
                     removePiece(arayPos);
                 }
             }else{
-                if ( Board.WEmpassentSquares[arayPos+8]){
+                if (arayPos <= 55 && Board.WEmpassentSquares[arayPos+8] && pieceMoved == 7 &&(pieceMovedPos == arayPos+1 ||pieceMovedPos == arayPos-1 )){
                     java.util.Arrays.fill(Board.WEmpassentSquares, false);
                     removePiece(arayPos+8);
                 }else{
@@ -241,6 +251,7 @@ public class MovementManager {
         }
 
         if (pieceMoved == 7){
+
             Board.blackPawns = curentBoard;
         }
         if (pieceMoved == 8){
@@ -278,24 +289,44 @@ public class MovementManager {
             turn=true;
         }
 
+        if (count >= 50){
+            gameFinished = true;
+        }
+
         
         if (whiteIsInCheck && checkWhiteMateCheck()){
             gameFinished = true;
+            System.out.println("white lost");
+            try {
+            Thread.sleep(6000);
+            } catch (InterruptedException e) {
+               Thread.currentThread().interrupt();
+            }
         }
         if (blackIsInCheck && checkBlackMateCheck()){
+            System.out.println("black lost");
+            try {
+            Thread.sleep(6000);
+            } catch (InterruptedException e) {
+               Thread.currentThread().interrupt();
+            }
             gameFinished = true;
         }
+
+        
         Board.atackSquares = 0;
         Board.captureSquares = 0;
         pieceMoved = 0;
         pieceMovedPos = 0;
 
+        System.out.println(count);
         
     }
     
     //white pieces movem ent 
 
     public static void WPMouvement(int arayPos){
+        
         //empassant logic 
         if (((Board.FifthRow >>> arayPos) & 1L) == 1) {
             if (((Board.FirstColumn >>> arayPos) & 1L) == 0) {
@@ -389,7 +420,8 @@ public class MovementManager {
                         }
                     }
                 }
-            } else {
+            } else if (((Board.EighthRow >>> arayPos) & 1L) == 0)  {
+
                 if (!checkIfSquareisUsed(arayPos + 8)) {
                     if (!whiteIsInCheck){
                         if (((Board.checkSquares >>> arayPos) &1L ) ==0 ){
@@ -414,9 +446,6 @@ public class MovementManager {
 
             //top right  
             if (((bTwo >>> arayPos) & 1L) == 0) {
-                if (((Board.checkSquares >>> arayPos )& 1L ) == 1){
-                    return;
-                }
                 for (int i = 1; i < 10; i++) {
                     
                     if (!checkIfSquareisUsed(arayPos + i * values[value] )) {
@@ -476,9 +505,6 @@ public class MovementManager {
 
     public static void WRM(int arayPos , int value , long bOne , int[] values){
        if (((bOne >>> arayPos) & 1L) == 0) {
-            if (((Board.checkSquares >>> arayPos )& 1L ) == 1){
-                return;
-            }
             for (int i = 1; i < 9; i++) {
 
                 
@@ -645,11 +671,11 @@ public class MovementManager {
                             }
                         }else {
                             
-                            if (((Board.checkSquares >>> arayPos + values[value] )& 1L)==0) {
-                                if (((Board.BlackAtackSquares >>> arayPos + values[value] )& 1L)==0) {
-                                    Board.atackSquares |= (1L << arayPos + values[value]);
-                                    Board.captureSquares |= (1L << arayPos+values[value]);
-                                }
+                            if (((Board.checkSquares >>> arayPos + values[value] )& 1L)==0 && ((Board.BlackAtackSquares >>> arayPos + values[value] )& 1L)==0) {
+
+                                Board.atackSquares |= (1L << arayPos + values[value]);
+                                Board.captureSquares |= (1L << arayPos+values[value]);
+                                
                             }
                         }
                         
@@ -710,17 +736,18 @@ public class MovementManager {
     public static void BPMouvement(int arayPos){
         //empassent 
         if (((Board.FourthRow >>> arayPos) & 1L) == 1) {
-            if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
+            if (((Board.FirstColumn >>> arayPos) & 1L) == 0) {
                 if ( returnPiece(arayPos-1) == 1 && Board.WEmpassentSquares[arayPos-1]){
-
+                    System.out.println("right");
                     Board.atackSquares |= (1L << arayPos - 9);
                     Board.captureSquares |= (1L << arayPos - 9);
                 }
             }
         }
         if (((Board.FourthRow >>> arayPos) & 1L) == 1) {
-            if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
+            if (((Board.EighthRow >>> arayPos) & 1L) == 0) {
                 if ( returnPiece(arayPos+1) == 1 && Board.WEmpassentSquares[arayPos+1]){
+                    System.out.println("left");
                     Board.atackSquares |= (1L << arayPos - 7);
                     Board.captureSquares |= (1L << arayPos - 7);
                 }
@@ -734,9 +761,11 @@ public class MovementManager {
                     Board.captureSquares |= (1L << arayPos - 7);
                 }   
             }else{
-                if (((Board.checkSquares >>> arayPos - 7)& 1L)==1){
-                    Board.atackSquares |= (1L << arayPos - 7);
-                    Board.captureSquares |= (1L << arayPos - 7);
+                if (checkIfSquareisUsedByEnemeyBlack(arayPos - 7)) {
+                    if (((Board.checkSquares >>> arayPos - 7)& 1L)==1){
+                        Board.atackSquares |= (1L << arayPos - 7);
+                        Board.captureSquares |= (1L << arayPos - 7);
+                    }
                 }
             }
             
@@ -749,9 +778,11 @@ public class MovementManager {
                     Board.captureSquares |= (1L << arayPos - 9);
                 }
             }else{
-                if (((Board.checkSquares >>> arayPos - 9)& 1L)==1){
-                    Board.atackSquares |= (1L << arayPos - 9);
-                    Board.captureSquares |= (1L << arayPos - 9);
+                if (checkIfSquareisUsedByEnemeyBlack(arayPos - 9)) {
+                    if (((Board.checkSquares >>> arayPos - 9)& 1L)==1){
+                        Board.atackSquares |= (1L << arayPos - 9);
+                        Board.captureSquares |= (1L << arayPos - 9);
+                    }
                 }
             }
         }
@@ -792,7 +823,7 @@ public class MovementManager {
                         }
                     }
                 }
-            } else {
+            } else if (((Board.FirstRow >>> arayPos) & 1L) == 0) {
                 if (!checkIfSquareisUsed(arayPos - 8)) {
                     if (!blackIsInCheck){
                         if (((Board.checkSquares >>> arayPos) &1L ) ==0 ){
@@ -817,9 +848,6 @@ public class MovementManager {
         if (((bOne >>> arayPos) & 1L) == 0) { 
             //top right  
             if (((bTwo >>> arayPos) & 1L) == 0) {
-                if (((Board.checkSquares >>> arayPos )& 1L ) == 1){
-                    return;
-                }
                 for (int i = 1; i < 10; i++) {
                     
                     if (!checkIfSquareisUsed(arayPos + i * values[value] )) {
@@ -879,9 +907,6 @@ public class MovementManager {
 
     public static void BRM(int arayPos , int value , long bOne , int[] values){
         if (((bOne >>> arayPos) & 1L) == 0) {
-            if (((Board.checkSquares >>> arayPos )& 1L ) == 1){
-                return;
-            }
             for (int i = 1; i < 9; i++) {
                 if (!checkIfSquareisUsed(arayPos + i *values[value])) {
                     if (!blackIsInCheck){
@@ -1042,11 +1067,11 @@ public class MovementManager {
                             }
                         }else {
                             
-                            if (((Board.checkSquares >>> arayPos + values[value] )& 1L)==0) {
-                                if (((Board.whiteAtackSquares >>> arayPos + values[value] )& 1L)==0) {
-                                    Board.atackSquares |= (1L << arayPos + values[value]);
-                                    Board.captureSquares |= (1L << arayPos+values[value]);
-                                }
+                            if (((Board.checkSquares >>> arayPos + values[value] )& 1L)==0 &&((Board.whiteAtackSquares >>> arayPos + values[value] )& 1L)==0) {
+
+                                Board.atackSquares |= (1L << arayPos + values[value]);
+                                Board.captureSquares |= (1L << arayPos+values[value]);
+
                             }
                         }
                         
@@ -1094,8 +1119,8 @@ public class MovementManager {
             BKM(arayPos, i, boundarieOne,boundarieTwo,  values);
         }
 
-        if (!WhiteKingHasBeenChecked && !WhiteKingHasBeenMoved){
-            checkWhiteCastling();
+        if (!blackKingHasBeenChecked && !blackKingHasBeenMoved){
+            checkBlackCastling();
         }
 
         
@@ -1251,12 +1276,14 @@ public class MovementManager {
             //top right  
             if (((bTwo >>> arayPos) & 1L) == 0) {
                 for (int i = 1; i < 10; i++) {
-                    
-                    checkSquares |= (1L << arayPos + i*values[value]);
-                    
                     if (checkIfSquareisUsedByEnemeyBlack(arayPos + i*values[value])){
                         piecePased = true;
+                        return;
+                        
                     }
+                    checkSquares |= (1L << arayPos + i*values[value]);
+                    
+                    
                     if (  checkIfSquareisUsedByEnemey(arayPos + i * values[value])) {
                         if (returnPiece(arayPos + i*values[value])== 8 ||returnPiece(arayPos + i*values[value]) ==10){
                             Board.checkSquares |= checkSquares;
@@ -1277,15 +1304,17 @@ public class MovementManager {
     public static void WCRM(int arayPos , int value , long bOne , int[] values , int piece ,long checkSquares , boolean piecePased ){
         if (((bOne >>> arayPos) & 1L) == 0) {
             for (int i = 1; i < 9; i++) {
-
-                checkSquares |= (1L << arayPos + i*values[value]);
-
                 if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * values[value])) {
                     piecePased = true;
+                    return;
+                     
                 }
+                checkSquares |= (1L << arayPos + i*values[value]);
+
+                
                 if (  checkIfSquareisUsedByEnemey(arayPos + i * values[value])) {
                     if (returnPiece(arayPos + i*values[value])== 9 ||returnPiece(arayPos + i*values[value]) ==10){
-                        Board.checkSquares += checkSquares;
+                        Board.checkSquares |= checkSquares;
                         if (!piecePased){
                             whiteIsInCheck = true;
                         }
@@ -1411,31 +1440,37 @@ public class MovementManager {
         }  
     
         if (((Board.FirstColumn >>> arayPos) & 1L) == 0) {
-            if (checkIfSquareisUsed(arayPos + 7) && returnPiece(arayPos + 7) == 7 )
+            if (checkIfSquareisUsed(arayPos + 7) && returnPiece(arayPos + 7) == 7) {
+                Board.checkSquares |= (1L << arayPos +7 );
                 whiteIsInCheck = true;
             }
+        }
 
         if (((Board.EighthColumn >>> arayPos) & 1L) == 0) {
-            if (checkIfSquareisUsed(arayPos + 9) && returnPiece(arayPos + 9) == 7 )
+            if (checkIfSquareisUsed(arayPos + 9) && returnPiece(arayPos + 9) == 7) {
+                Board.checkSquares |= (1L << arayPos +9);
                 whiteIsInCheck = true;
             }
+        }
+        
     }
     
-
     public static void BCBM(int arayPos , int value , long bOne , long bTwo , int[] values , int piece ,long checkSquares , boolean piecePased ){
         if (((bOne >>> arayPos) & 1L) == 0) {
             //top right  
             if (((bTwo >>> arayPos) & 1L) == 0) {
                 for (int i = 1; i < 10; i++) {
-                    
-                    checkSquares |= (1L << arayPos + i*values[value]);
-                    
                     if (checkIfSquareisUsedByEnemey(arayPos + i*values[value])){
                         piecePased = true;
+                        return;
+                        
                     }
+                    checkSquares |= (1L << arayPos + i*values[value]);
+                    
+                    
                     if (  checkIfSquareisUsedByEnemeyBlack(arayPos + i * values[value])) {
                         if (returnPiece(arayPos + i*values[value])== 2 ||returnPiece(arayPos + i*values[value]) ==4){
-                            Board.checkSquares += checkSquares;
+                            Board.checkSquares |= checkSquares;
                             if (!piecePased){
                                 blackIsInCheck = true;
                             }
@@ -1453,13 +1488,14 @@ public class MovementManager {
     public static void BCRM(int arayPos , int value , long bOne , int[] values , int piece ,long checkSquares , boolean piecePased ){
         if (((bOne >>> arayPos) & 1L) == 0) {
             for (int i = 1; i < 9; i++) {
-
+                if (checkIfSquareisUsedByEnemey(arayPos + i * values[value])) {
+                    piecePased = true;
+                    return;
+                }
                 checkSquares |= (1L << arayPos + i*values[value]);
 
-                if (checkIfSquareisUsedByEnemeyBlack(arayPos + i * values[value])) {
-                    piecePased = true;
-                }
-                if (  checkIfSquareisUsedByEnemey(arayPos + i * values[value])) {
+                
+                if (  checkIfSquareisUsedByEnemeyBlack(arayPos + i * values[value])) {
                     if (returnPiece(arayPos + i*values[value])== 3 ||returnPiece(arayPos + i*values[value]) ==4){
                         Board.checkSquares |= checkSquares;
                         if (!piecePased){
@@ -1588,96 +1624,92 @@ public class MovementManager {
         
         if (((Board.FirstColumn >>> arayPos) & 1L) == 0) {
             if (checkIfSquareisUsed(arayPos-7) && returnPiece(arayPos-7) == 1){
+                Board.checkSquares |= (1L << arayPos -7 );
                 blackIsInCheck = true;
             }
         }
 
         if (((Board.EighthColumn >>> arayPos) & 1L) == 0) {
             if (checkIfSquareisUsed(arayPos-9) && returnPiece(arayPos-9) == 1){
+                Board.checkSquares |= (1L << arayPos -9 );
                 blackIsInCheck = true;
             }
         }
-        
     }
 
     public static boolean checkWhiteMateCheck(){
-        for (int i = 0 ; i<64 ; i++){
-            int piece ;
-            Board.atackSquares =0;
-            if (((Board.whiteBoard >>> i)& 1L) ==1){
-                piece = returnPiece(i);
-                if (piece == 1){
-                    WPMouvement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 2){
-                    WBMouvement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 3){
-                    WRMouvement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 4){
-                    WQMouvement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 5){
-                    WKNMovement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 6){
-                    WKMovement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
+        updateBlackBoard();
+
+        for (int i =0 ;i<64;i++){
+            if (((Board.blackBoard >>> i) & 1L) != 0){
+
+                
+                Board.atackSquares = 0;
+                Board.captureSquares = 0;
+                int pieceType = MovementManager.returnPiece(i);
+                if (pieceType == 7){
+                    MovementManager.BPMouvement(i);
                 }
+                if (pieceType == 8) {
+                    MovementManager.BBMouvement(i);
+                }
+                if (pieceType == 9) {
+                    MovementManager.BRMouvement(i);
+                }
+                if (pieceType == 10) {
+                    MovementManager.BQMouvement(i);
+                }
+                if (pieceType == 11) {
+                    MovementManager.BKNMovement(i);
+                }
+                if (pieceType == 12) {
+                    MovementManager.BKMovement(i);
+                }
+
+                if (Board.atackSquares ==0){
+                    continue;
+                }
+
+                for (int r = 0; r < 64; r++) {
+                    if (((Board.atackSquares >>> r) & 1L) != 0) {
+                        return false;
+                    }
+
+                }
+
             }
         }
         return true;
     }
 
     public static boolean checkBlackMateCheck(){
+        updateWhiteBoard();
         for (int i = 0 ; i<64 ; i++){
-            int piece ;
             Board.atackSquares =0;
-            if (((Board.blackBoard >>> i)& 1L) ==1){
-                piece = returnPiece(i);
-                if (piece == 7){
-                    BPMouvement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
+            if (((Board.whiteBoard >>> i)& 1L) ==1){
+                int piece = MovementManager.returnPiece(i);
+                if (piece == 1){
+                    MovementManager.WPMouvement(i);
+                }if (piece == 2){
+                    MovementManager.WBMouvement(i);
+                }if (piece == 3){
+                    MovementManager.WRMouvement(i);
+                }if (piece == 4){
+                    MovementManager.WQMouvement(i);
+                }if (piece == 5){
+                    MovementManager.WKNMovement(i);
+                }if (piece == 6){
+                    MovementManager.WKMovement(i);
+                }
+                
+                if (Board.atackSquares != 0) {
+
+                    for (int r = 0; r < 64; r++) {
+                        if (((Board.atackSquares >>> r) & 1L) != 0) {
+                            return false;
+                        }
                     }
-                }if (piece == 8){
-                    BBMouvement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 9){
-                    BRMouvement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 10){
-                    BQMouvement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 11){
-                    BKNMovement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
-                }if (piece == 12){
-                    BKMovement(i);
-                    if (Board.atackSquares != 0){
-                        return false;
-                    }
+
                 }
             }
         }
@@ -2162,20 +2194,13 @@ public class MovementManager {
 
     public static void updateWhiteBoard(){
         Board.whiteBoard = 0;
-        for (int i = 0 ; i < 64; i++ ){
-            if (checkIfSquareisUsedByEnemeyBlack(i)){
-                Board.whiteBoard |= (1L << i);
-            }
-        }
+        Board.whiteBoard = Board.whiteBishops | Board.whiteKing | Board.whiteKnights | Board.whitePawns | Board.whiteQueen | Board.whiteRoocks;
+        
     }
 
     public static void updateBlackBoard(){
         Board.blackBoard = 0;
-        for (int i = 0 ; i < 64; i++ ){
-            if (checkIfSquareisUsedByEnemey(i)){
-                Board.blackBoard |= (1L << i);
-            }
-        }
+        Board.blackBoard = Board.blackBishops | Board.blackKing | Board.blackKnights | Board.blackPawns | Board.blackQueen | Board.blackRoocks;
     }
 
     public static void blackPromotion(int arayPos) {
@@ -2205,4 +2230,106 @@ public class MovementManager {
         promotionPiece = 0;
         whitePromotionUI = false;
     }
+
+    public record State(
+            int pieceMoved,
+            int pieceMovedPos,
+            boolean WhiteKingHasBeenMoved,
+            boolean blackKingHasBeenMoved,
+            boolean WhiteKingHasBeenChecked,
+            boolean blackKingHasBeenChecked,
+            int whiteKingPos,
+            int blackKingPos,
+            boolean whiteIsInCheck,
+            boolean blackIsInCheck,
+            boolean turn,
+            boolean gameFinished,
+            boolean whitePromotionUI,
+            boolean blackPromotionUI,
+            int promotionPiece,
+            int promotionsquare,
+            boolean WhiteLeftRookHasBeenMoved,
+            boolean WhiteRightRookHasBeenMoved,
+            boolean BlackLeftRookHasBeenMoved,
+            boolean BlackRightRookHasBeenMoved,
+            boolean BlackAi,
+            int count
+    ) {
+    }
+
+    private static State savedState;
+
+    public static State captureState() {
+        return new State(
+                pieceMoved,
+                pieceMovedPos,
+                WhiteKingHasBeenMoved,
+                blackKingHasBeenMoved,
+                WhiteKingHasBeenChecked,
+                blackKingHasBeenChecked,
+                whiteKingPos,
+                blackKingPos,
+                whiteIsInCheck,
+                blackIsInCheck,
+                turn,
+                gameFinished,
+                whitePromotionUI,
+                blackPromotionUI,
+                promotionPiece,
+                promotionsquare,
+                WhiteLeftRookHasBeenMoved,
+                WhiteRightRookHasBeenMoved,
+                BlackLeftRookHasBeenMoved,
+                BlackRightRookHasBeenMoved,
+                BlackAi,
+                count
+        );
+    }
+
+    public static void saveState() {
+        savedState = captureState();
+    }
+
+    public static void resetState(State state) {
+        if (state == null) {
+            return;
+        }
+
+        pieceMoved = state.pieceMoved();
+        pieceMovedPos = state.pieceMovedPos();
+
+        WhiteKingHasBeenMoved = state.WhiteKingHasBeenMoved();
+        blackKingHasBeenMoved = state.blackKingHasBeenMoved();
+
+        WhiteKingHasBeenChecked = state.WhiteKingHasBeenChecked();
+        blackKingHasBeenChecked = state.blackKingHasBeenChecked();
+
+        whiteKingPos = state.whiteKingPos();
+        blackKingPos = state.blackKingPos();
+
+        whiteIsInCheck = state.whiteIsInCheck();
+        blackIsInCheck = state.blackIsInCheck();
+
+        turn = state.turn();
+        gameFinished = state.gameFinished();
+
+        whitePromotionUI = state.whitePromotionUI();
+        blackPromotionUI = state.blackPromotionUI();
+
+        promotionPiece = state.promotionPiece();
+        promotionsquare = state.promotionsquare();
+
+        WhiteLeftRookHasBeenMoved = state.WhiteLeftRookHasBeenMoved();
+        WhiteRightRookHasBeenMoved = state.WhiteRightRookHasBeenMoved();
+        BlackLeftRookHasBeenMoved = state.BlackLeftRookHasBeenMoved();
+        BlackRightRookHasBeenMoved = state.BlackRightRookHasBeenMoved();
+
+        BlackAi = state.BlackAi();
+        count = state.count();
+    }
+
+    public static void resetState() {
+        resetState(savedState);
+    }
+   
 }

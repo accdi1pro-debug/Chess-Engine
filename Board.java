@@ -58,4 +58,112 @@ public class Board{
 
     public static boolean[] WEmpassentSquares = new boolean[64];
     public static boolean[] BEmpassentSquares = new boolean[64];
+
+    public record State(
+            long whitePawns,
+            long whiteBishops,
+            long whiteKnights,
+            long whiteRoocks,
+            long whiteQueen,
+            long whiteKing,
+            long blackPawns,
+            long blackBishops,
+            long blackKnights,
+            long blackRoocks,
+            long blackQueen,
+            long blackKing,
+            long atackSquares,
+            long captureSquares,
+            long whiteBoard,
+            long blackBoard,
+            long board,
+            long checkSquares,
+            long kingCheckSquares,
+            long whiteAtackSquares,
+            long BlackAtackSquares,
+            long allAtackSquares,
+            boolean[] WEmpassentSquares,
+            boolean[] BEmpassentSquares
+    ) {
+        public State {
+            WEmpassentSquares = WEmpassentSquares == null ? new boolean[64] : java.util.Arrays.copyOf(WEmpassentSquares, 64);
+            BEmpassentSquares = BEmpassentSquares == null ? new boolean[64] : java.util.Arrays.copyOf(BEmpassentSquares, 64);
+        }
+    }
+
+    private static State savedState;
+
+    public static State captureState() {
+        return new State(
+                whitePawns,
+                whiteBishops,
+                whiteKnights,
+                whiteRoocks,
+                whiteQueen,
+                whiteKing,
+                blackPawns,
+                blackBishops,
+                blackKnights,
+                blackRoocks,
+                blackQueen,
+                blackKing,
+                atackSquares,
+                captureSquares,
+                whiteBoard,
+                blackBoard,
+                board,
+                checkSquares,
+                kingCheckSquares,
+                whiteAtackSquares,
+                BlackAtackSquares,
+                allAtackSquares,
+                WEmpassentSquares,
+                BEmpassentSquares
+        );
+    }
+
+    public static void saveState() {
+        savedState = captureState();
+    }
+
+    public static void resetState(State state) {
+        if (state == null) {
+            return;
+        }
+
+        whitePawns = state.whitePawns();
+        whiteBishops = state.whiteBishops();
+        whiteKnights = state.whiteKnights();
+        whiteRoocks = state.whiteRoocks();
+        whiteQueen = state.whiteQueen();
+        whiteKing = state.whiteKing();
+
+        blackPawns = state.blackPawns();
+        blackBishops = state.blackBishops();
+        blackKnights = state.blackKnights();
+        blackRoocks = state.blackRoocks();
+        blackQueen = state.blackQueen();
+        blackKing = state.blackKing();
+
+        atackSquares = state.atackSquares();
+        captureSquares = state.captureSquares();
+
+        whiteBoard = state.whiteBoard();
+        blackBoard = state.blackBoard();
+        board = state.board();
+
+        checkSquares = state.checkSquares();
+        kingCheckSquares = state.kingCheckSquares();
+        whiteAtackSquares = state.whiteAtackSquares();
+        BlackAtackSquares = state.BlackAtackSquares();
+        allAtackSquares = state.allAtackSquares();
+
+        System.arraycopy(state.WEmpassentSquares(), 0, WEmpassentSquares, 0, 64);
+        System.arraycopy(state.BEmpassentSquares(), 0, BEmpassentSquares, 0, 64);
+    }
+
+    public static void resetState() {
+        resetState(savedState);
+    }
+
 }

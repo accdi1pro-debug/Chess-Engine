@@ -1,9 +1,13 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 public class Main extends JPanel implements ActionListener  { 
+
+    private static Main instance;
 
     public Timer timer ;
     public Image whitePawn = new ImageIcon("src/Images/wp.png").getImage();
@@ -20,8 +24,6 @@ public class Main extends JPanel implements ActionListener  {
     public Image blackRook = new ImageIcon("src/Images/br.png").getImage();
     public Image blackQueen = new ImageIcon("src/Images/bq.png").getImage();
     public Image blackKing = new ImageIcon("src/Images/bK.png").getImage();
-
-    
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Chess");
@@ -40,46 +42,44 @@ public class Main extends JPanel implements ActionListener  {
                 float newY = y -900;
 
                 if ((x>900 || y>900 )||(x<100 ||y<100)){
-
-                    System.out.println("out of bound");
-                    if (MovementFuncion.whitePromotionUI){
+                    if (MovementManager.whitePromotionUI){
                         if (y>900){
                             if (x>300 && x<700){
                                 if (x>600){
-                                    MovementFuncion.promotionPiece =4;
+                                    MovementManager.promotionPiece =4;
                                 }else if (x>500){
-                                    MovementFuncion.promotionPiece =3;
+                                    MovementManager.promotionPiece =3;
                                 }else if (x>400){
-                                    MovementFuncion.promotionPiece =2;
+                                    MovementManager.promotionPiece =2;
                                 }else if (x>300){
-                                    MovementFuncion.promotionPiece =1;
+                                    MovementManager.promotionPiece =1;
                                 }
-                                MovementFuncion.whitePromotion(MovementFuncion.promotionsquare);
+                                MovementManager.whitePromotion(MovementManager.promotionsquare);
                             }
                         }
                     }
-                    if (MovementFuncion.blackPromotionUI){
+                    if (MovementManager.blackPromotionUI){
                         if (y<100){
                             if (x>300 && x<700){
                                 if (x>600){
-                                    MovementFuncion.promotionPiece =4;
+                                    MovementManager.promotionPiece =4;
                                 }else if (x>500){
-                                    MovementFuncion.promotionPiece =3;
+                                    MovementManager.promotionPiece =3;
                                 }else if (x>400){
-                                    MovementFuncion.promotionPiece =2;
+                                    MovementManager.promotionPiece =2;
                                 }else if (x>300){
-                                    MovementFuncion.promotionPiece =1;
+                                    MovementManager.promotionPiece =1;
                                 }
-                                MovementFuncion.blackPromotion(MovementFuncion.promotionsquare);
+                                MovementManager.blackPromotion(MovementManager.promotionsquare);
                             }
                         }
                     }
-                    System.out.println(MovementFuncion.promotionPiece );
-                    if (MovementFuncion.blackPromotionUI){
+                    System.out.println(MovementManager.promotionPiece );
+                    if (MovementManager.blackPromotionUI){
                         
                     }
 
-                }else if (!MovementFuncion.blackPromotionUI && !MovementFuncion.whitePromotionUI ){
+                }else if (!MovementManager.blackPromotionUI && !MovementManager.whitePromotionUI ){
 
                     int row = (int) Math.floor(-newY/100);
 
@@ -90,8 +90,8 @@ public class Main extends JPanel implements ActionListener  {
 
                     if ((((Board.atackSquares >>> posInAray) & 1L) != 0)) {
                         
-                        MovementFuncion.movePiece(posInAray);
-                    }else{MovementFuncion.showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);}
+                        MovementManager.movePiece(posInAray);
+                    }else{MovementManager.showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);}
 
                     
                     
@@ -111,19 +111,49 @@ public class Main extends JPanel implements ActionListener  {
         
     }
 
+    public static Main getInstance() {
+        return instance;
+    }
+
     public Main (){
+        instance = this;
         this.setPreferredSize(new Dimension(1000, 1000));
+        this.setFocusable(true);
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    handleSpacePressed();
+                }
+            }
+        });
 
         timer = new Timer(10, this); 
         //test();
         timer.start();
     }
 
+    public void handleSpacePressed() {
+        if (!MovementManager.turn){
+            MovesGenerator.generateBlackMoves();
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         // Timer tick: update game state if needed and repaint
-        
         repaint();
+        if (MovementManager.gameFinished){
+            return;
+        }
+            
+        if (MovementManager.turn == true){
+            MovesGenerator.generateWhiteMoves();
+        }else{
+            MovesGenerator.generateBlackMoves();
+        }
+        
     }
 
     @Override
@@ -148,7 +178,7 @@ public class Main extends JPanel implements ActionListener  {
                     }
                 }
 
-                //if (((Board.checkSquares >>>  araypos) & 1L) != 0){g.setColor(new Color(255,0,0));}
+                if (((Board.checkSquares >>>  araypos) & 1L) != 0){g.setColor(new Color(255,255,0));}
                 //if (Board.BEmpassentSquares[araypos]){g.setColor(new Color(255,0,0));}
                 //if (Board.WEmpassentSquares[araypos]){g.setColor(new Color(255,0,0));}
                 //if (((Board.whiteAtackSquares>>> araypos)& 1L ) == 1){g.setColor(new Color(255,0,0));}
@@ -174,14 +204,14 @@ public class Main extends JPanel implements ActionListener  {
             }
         }
 
-        if (MovementFuncion.blackPromotionUI){
+        if (MovementManager.blackPromotionUI){
             g.drawImage(blackKnight, 300, 0, 100, 100, this);
             g.drawImage(blackRook, 400, 0, 100, 100, this);
             g.drawImage(blackQueen, 500, 0, 100, 100, this);
             g.drawImage(blackBishop, 600, 0, 100, 100, this);
         }
         
-        if (MovementFuncion.whitePromotionUI){
+        if (MovementManager.whitePromotionUI){
             g.drawImage(whiteKnight, 300, 900, 100, 100, this);
             g.drawImage(whiteRook, 400, 900, 100, 100, this);
             g.drawImage(whiteQueen, 500, 900, 100, 100, this);
@@ -278,9 +308,7 @@ public class Main extends JPanel implements ActionListener  {
         if (((Board.whiteKing >>> i) & 1L) != 0) {
             return 6;
         }
-    
         
-
         if (((Board.blackPawns >>> i) & 1L) != 0) {
             return 7;
         }
