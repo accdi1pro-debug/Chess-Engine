@@ -10,10 +10,17 @@ public class MovesGenerator {
     public static List<Integer> who = new ArrayList<>();
     public static List<Integer> where = new ArrayList<>();
 
-    public static List<Move> moves = new ArrayList<>();
+    public static int PosInAray = 0;
+    public static int bestMove = 0;
+    public static int bestMoveEvaluation = 0;
 
-    public static void generateBlackMoves(){
-        moves.clear();
+    public static int depth = 3;
+
+    public static List<Move> generateBlackMoves(){
+        List<Move> moves = new ArrayList<>();
+        PosInAray = 0;
+        bestMove = 0;
+        bestMoveEvaluation = Integer.MAX_VALUE;
 
         MovementManager.updateBlackBoard();
         saveState();
@@ -50,29 +57,25 @@ public class MovesGenerator {
                 for (int r = 0; r < 64; r++) {
                     if (((Board.atackSquares >>> r) & 1L) != 0) {
 
-                        moves.add(new Move(i,r,pieceType));
-
+                        PosInAray++;
+                        moves.add(new Move(i, r, pieceType));
                         resetState();
+
                     }
 
                 }
 
             }
         }
-        animateMoves();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        MovementManager.turn = true;
-
-
+        return moves;
+        
     }
 
-    public static void generateWhiteMoves(){
-        moves.clear();
+    public static List<Move> generateWhiteMoves(){
+        List<Move> moves = new ArrayList<>();
+        PosInAray =0;
+        bestMove = 0;
+        bestMoveEvaluation=Integer.MIN_VALUE;
 
         MovementManager.updateWhiteBoard();
         saveState();
@@ -98,6 +101,7 @@ public class MovesGenerator {
 
                     for (int r = 0; r < 64; r++) {
                         if (((Board.atackSquares >>> r) & 1L) != 0) {
+                            PosInAray++;
                             moves.add(new Move(i,r,piece));
 
                             resetState();
@@ -107,26 +111,96 @@ public class MovesGenerator {
                 }
             }
         }
-        animateMoves(); 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        MovementManager.turn = false;
+        return moves;
         
     }
 
-    public static void animateMoves() {
-
-        int randint ;
-        if (!moves.isEmpty()){
-            randint = random.nextInt(moves.size());
-        }else{
-            return;
+    public static int shearch(int depth , int alpha , int beta){
+        if (depth == 0 || MovementManager.gameFinished){
+            return EvaluationFuncion.Evaluate();
         }
-        Move(randint);
 
+        boolean maximizing =MovementManager.turn;
+
+        List<Move> candidates;
+
+        int best = maximizing ?Integer.MIN_VALUE :Integer.MAX_VALUE  ;
+
+        if (maximizing) {
+            candidates = generateWhiteMoves();
+        } else {
+            candidates = generateBlackMoves();
+        }
+
+        for (Move move : candidates){
+            
+            Board.State boardState = Board.captureState();
+            MovementManager.State managerState = MovementManager.captureState();
+
+            try{
+                Move(move);
+                int score = shearch(depth - 1 , alpha , beta);
+
+
+                if (maximizing){
+                    best = Math.max(best, score);
+                    alpha = Math.max(alpha , best);
+                }else{
+                    best = Math.min(best , score);
+                    beta = Math.min(beta , best);
+                }
+
+            }finally{
+                MovementManager.resetState(managerState);
+                Board.resetState(boardState);
+            }
+
+            if (alpha > beta){break;}
+        }
+        return best;
+    }
+
+    public static void play(){
+        Move(findBestMove(depth));
+
+    }
+
+    public static Move findBestMove(int depth){
+        boolean maximizing =MovementManager.turn;
+
+        List<Move> candidates;
+        int score ;
+        Move best = null;
+
+        if (maximizing) {
+            candidates = generateWhiteMoves();
+        } else {
+            candidates = generateBlackMoves();
+        }
+        int bestScore = maximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+
+        for (Move move : candidates){
+            System.out.println("working");
+            Board.State boardState = Board.captureState();
+            MovementManager.State managerState = MovementManager.captureState();
+
+            try{
+                Move(move);
+                score =shearch(depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+            }finally{
+                MovementManager.resetState(managerState);
+                Board.resetState(boardState);
+            }
+
+            if ( maximizing && (score > bestScore) || !maximizing && (score <bestScore)){
+                bestScore = score;
+                best = move;
+            }
+
+        }
+        System.out.println("finished ");
+        return best;
     }
 
     public static void saveState(){
@@ -144,17 +218,12 @@ public class MovesGenerator {
         Board.resetState();
     }
 
-    public static void Move(int posInList){
+    public static void Move(Move move){
 
-        MovementManager.showAtackSquare(moves.get(posInList).piece(),moves.get(posInList).from());
-        MovementManager.movePiece(moves.get(posInList).to());
+        MovementManager.showAtackSquare(move.piece(),move.from());
+        MovementManager.movePiece(move.to());
 
-        if (MovementManager.whitePromotionUI){
-            MovementManager.promotionPiece = 3;
-            MovementManager.whitePromotion(MovementManager.promotionsquare);
-        }if (MovementManager.blackPromotionUI){
-            MovementManager.promotionPiece = 3;
-            MovementManager.blackPromotion(MovementManager.promotionsquare);
-        }
     }
+
+
 }

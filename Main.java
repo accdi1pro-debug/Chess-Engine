@@ -35,6 +35,7 @@ public class Main extends JPanel implements ActionListener  {
         gamePanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
+
                 float x = e.getX();
                 float y = e.getY();
 
@@ -89,7 +90,6 @@ public class Main extends JPanel implements ActionListener  {
                     
 
                     if ((((Board.atackSquares >>> posInAray) & 1L) != 0)) {
-                        
                         MovementManager.movePiece(posInAray);
                     }else{MovementManager.showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);}
 
@@ -144,14 +144,17 @@ public class Main extends JPanel implements ActionListener  {
     public void actionPerformed(ActionEvent e) {
         // Timer tick: update game state if needed and repaint
         repaint();
+
         if (MovementManager.gameFinished){
             return;
         }
             
-        if (MovementManager.turn == true){
-            MovesGenerator.generateWhiteMoves();
-        }else{
-            MovesGenerator.generateBlackMoves();
+        if (MovementManager.turn && MovementManager.whiteAi){
+            MovesGenerator.play();
+
+        }else if (!MovementManager.turn && MovementManager.BlackAi){
+            MovesGenerator.play();
+
         }
         
     }
@@ -181,7 +184,7 @@ public class Main extends JPanel implements ActionListener  {
                 if (((Board.checkSquares >>>  araypos) & 1L) != 0){g.setColor(new Color(255,255,0));}
                 //if (Board.BEmpassentSquares[araypos]){g.setColor(new Color(255,0,0));}
                 //if (Board.WEmpassentSquares[araypos]){g.setColor(new Color(255,0,0));}
-                //if (((Board.whiteAtackSquares>>> araypos)& 1L ) == 1){g.setColor(new Color(255,0,0));}
+                //if (((Board.BlackAtackSquares>>> araypos)& 1L ) == 1){g.setColor(new Color(255,0,0));}
                 //if (Math.floor(araypos %8) != 0){g.setColor(new Color(255,0,0));}
                 g.fillRect(r*100 +100, c *100 +100, 100, 100);
                 
