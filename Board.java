@@ -19,11 +19,11 @@ public class Board{
     public static long captureSquares = 0x0000_0000_0000_0000L ;
 
     //boards for each combined pieces by color
-    public static long whiteBoard;
-    public static long blackBoard;
-    
-    //combined bords of all pieces
-    public static long board;
+    public static long whiteBoard ;
+    public static long blackBoard ;
+   
+    //combined boards of all pieces
+    public static long board ;
 
     //all check squares
     public static long checkSquares;
@@ -56,9 +56,6 @@ public class Board{
 
     public static long boundaries = 0xff81_8181_8181_81ffL ;
 
-    public static boolean[] WEmpassentSquares = new boolean[64];
-    public static boolean[] BEmpassentSquares = new boolean[64];
-
     public record State(
             long whitePawns,
             long whiteBishops,
@@ -81,14 +78,8 @@ public class Board{
             long kingCheckSquares,
             long whiteAtackSquares,
             long BlackAtackSquares,
-            long allAtackSquares,
-            boolean[] WEmpassentSquares,
-            boolean[] BEmpassentSquares
+            long allAtackSquares
     ) {
-        public State {
-            WEmpassentSquares = WEmpassentSquares == null ? new boolean[64] : java.util.Arrays.copyOf(WEmpassentSquares, 64);
-            BEmpassentSquares = BEmpassentSquares == null ? new boolean[64] : java.util.Arrays.copyOf(BEmpassentSquares, 64);
-        }
     }
 
     private static State savedState;
@@ -116,9 +107,7 @@ public class Board{
                 kingCheckSquares,
                 whiteAtackSquares,
                 BlackAtackSquares,
-                allAtackSquares,
-                WEmpassentSquares,
-                BEmpassentSquares
+                allAtackSquares
         );
     }
 
@@ -157,9 +146,6 @@ public class Board{
         whiteAtackSquares = state.whiteAtackSquares();
         BlackAtackSquares = state.BlackAtackSquares();
         allAtackSquares = state.allAtackSquares();
-
-        System.arraycopy(state.WEmpassentSquares(), 0, WEmpassentSquares, 0, 64);
-        System.arraycopy(state.BEmpassentSquares(), 0, BEmpassentSquares, 0, 64);
     }
 
     public static void resetState() {

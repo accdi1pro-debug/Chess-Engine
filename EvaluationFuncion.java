@@ -1,23 +1,44 @@
 public class EvaluationFuncion {
+    private final MovementManager movementManager = MovementManager.INSTANCE;
+
     public static final int PAWN_VALUE = 100;
     public static final int BISHOP_VALUE = 320;
     public static final int KNIGHT_VALUE = 300;
     public static final int ROOK_VALUE = 500;
     public static final int QUEEN_VALUE = 900;
-    public static final int KING_VALUE = 99999;
+    public static final int KING_VALUE = 1000;
+    public static final int PST_MULTIPLIER = 100;
 
-    public static long board =0L;
+    private long board = 0L;
 
-    public static int whiteScores = 0;
-    public static int blackScores = 0;
+    private int whiteScores = 0;
+    private int blackScores = 0;
 
-    public static int blackAtackSquaresCount = 0 ;
-    public static int blackCapureSquaresCount = 0 ;
+    private int blackAtackSquaresCount = 0;
+    private int blackCapureSquaresCount = 0;
 
-    public static int whiteAtackSquaresCount = 0 ;
-    public static int whiteCapureSquaresCount = 0 ; 
+    private int whiteAtackSquaresCount = 0;
+    private int whiteCapureSquaresCount = 0;
+
+    private final int[] whitePawnsPerFile = new int[8];
+    private final int[] blackPawnsPerFile = new int[8];
+
 
     public static int Evaluate(){
+        return new EvaluationFuncion().evaluate();
+    }
+
+    private int evaluate(){
+        if (movementManager.won == 1) {
+            return 9_000_000;
+        }
+        if (movementManager.won == 2) {
+            return -9_000_000;
+        }
+        if (movementManager.won == 3 || movementManager.gameFinished) {
+            return 0;
+        }
+
         updateBoard();
         whiteScores =0;
         blackScores = 0;
@@ -25,88 +46,109 @@ public class EvaluationFuncion {
         blackCapureSquaresCount = 0 ;
         whiteAtackSquaresCount = 0 ;
         whiteCapureSquaresCount = 0 ; 
+
+        java.util.Arrays.fill(whitePawnsPerFile, 0);
+        java.util.Arrays.fill(blackPawnsPerFile, 0);
         
         for (int i=0; i<64; i++){
             if (((board >>> i) & 1L)==1){
                 int piece = returnPiece(i);
                 Board.atackSquares = 0L;
                 Board.captureSquares =0L;
-                if (piece <7){
-                    if (piece == 1){
-                        whiteScores += PAWN_VALUE + PAWN_PQT[63 - i];
-                        MovementManager.WPMouvement(i);
-                    }if (piece == 2){
-                        whiteScores += BISHOP_VALUE + BISHOP_PQT[63 - i];
-                        MovementManager.WBMouvement(i);
-                    }if (piece==3){
-                        whiteScores += ROOK_VALUE + ROOK_MG_PQT[63 -i];
-                        MovementManager.WRMouvement(i);
-                    }if (piece== 4){ 
-                        whiteScores += QUEEN_VALUE + QUEEN_MG_PQT[63 - i];
-                        MovementManager.WQMouvement(i);
-                    }if (piece == 5){
-                        whiteScores +=KNIGHT_VALUE + KNIGHT_PQT[63 - i];
-                        MovementManager.WKNMovement(i);
-                    }if (piece == 6){
-                        whiteScores += KING_VALUE + KING_MIDDLE_GAME_PQT[63 - i];
-                        MovementManager.WKMovement(i);
+                if (piece < 7) {
+                    switch (piece) {
+                        case 1 -> {
+                            whiteScores += PAWN_VALUE + PAWN_PQT[63 - i] * PST_MULTIPLIER;
+                            overlapedPawns(i);
+                            movementManager.WPMouvement(i);
+                        }
+                        case 2 -> {
+                            whiteScores += BISHOP_VALUE + BISHOP_PQT[63 - i] * PST_MULTIPLIER;
+                            movementManager.WBMouvement(i);
+                        }
+                        case 3 -> {
+                            whiteScores += ROOK_VALUE + ROOK_MG_PQT[63 - i] * PST_MULTIPLIER;
+                            movementManager.WRMouvement(i);
+                        }
+                        case 4 -> {
+                            whiteScores += QUEEN_VALUE + QUEEN_MG_PQT[63 - i] * PST_MULTIPLIER;
+                            movementManager.WQMouvement(i);
+                        }
+                        case 5 -> {
+                            whiteScores += KNIGHT_VALUE + KNIGHT_PQT[63 - i] * PST_MULTIPLIER;
+                            movementManager.WKNMovement(i);
+                        }
+                        case 6 -> {
+                            whiteScores += KING_VALUE + KING_MIDDLE_GAME_PQT[63 - i] * PST_MULTIPLIER;
+                            movementManager.WKMovement(i);
+                        }
+                        default -> { }
                     }
-                    
+
                     whiteAtackSquaresCount += Long.bitCount(Board.atackSquares);
                     whiteCapureSquaresCount += Long.bitCount(Board.captureSquares);
-
-
-                }else {
-                    if (piece == 7){
-                        blackScores += PAWN_VALUE + PAWN_PQT[i];
-                        MovementManager.BPMouvement(i);
-                    }if (piece == 8){
-                        blackScores += BISHOP_VALUE + BISHOP_PQT[i];
-                        MovementManager.BBMouvement(i);
-                    }if (piece == 9){
-                        blackScores += ROOK_VALUE + ROOK_MG_PQT[i];
-                        MovementManager.BRMouvement(i);
-                    }if (piece == 10){
-                        blackScores += QUEEN_VALUE + QUEEN_MG_PQT [i];
-                        MovementManager.BQMouvement(i);
-                    }if (piece == 11){
-                        blackScores += KNIGHT_VALUE + KNIGHT_PQT[i];
-                        MovementManager.BKNMovement(i);
-                    }if (piece == 12){
-                        blackScores += KING_VALUE+ KING_MIDDLE_GAME_PQT[i];
-                        MovementManager.BKMovement(i);
-                    }  
-
-
+                } else {
+                    switch (piece) {
+                        case 7 -> {
+                            blackScores += PAWN_VALUE + PAWN_PQT[i] * PST_MULTIPLIER;
+                            BoverlapedPawns(i);
+                            movementManager.BPMouvement(i);
+                        }
+                        case 8 -> {
+                            blackScores += BISHOP_VALUE + BISHOP_PQT[i] * PST_MULTIPLIER;
+                            movementManager.BBMouvement(i);
+                        }
+                        case 9 -> {
+                            blackScores += ROOK_VALUE + ROOK_MG_PQT[i] * PST_MULTIPLIER;
+                            movementManager.BRMouvement(i);
+                        }
+                        case 10 -> {
+                            blackScores += QUEEN_VALUE + QUEEN_MG_PQT[i] * PST_MULTIPLIER;
+                            movementManager.BQMouvement(i);
+                        }
+                        case 11 -> {
+                            blackScores += KNIGHT_VALUE + KNIGHT_PQT[i] * PST_MULTIPLIER;
+                            movementManager.BKNMovement(i);
+                        }
+                        case 12 -> {
+                            blackScores += KING_VALUE + KING_MIDDLE_GAME_PQT[i] * PST_MULTIPLIER;
+                            movementManager.BKMovement(i);
+                        }
+                        default -> { }
+                    }
 
                     blackAtackSquaresCount += Long.bitCount(Board.atackSquares);
                     blackCapureSquaresCount += Long.bitCount(Board.captureSquares);
                 }
             }
-
         }
-        if (MovementManager.blackIsInCheck){
-            blackScores -= 90000;
+        if (movementManager.blackIsInCheck){
+            blackScores -= 1000;
         }
-        if (MovementManager.whiteIsInCheck){
-            whiteScores -= 90000;
-        }
-
-        if (MovementManager.checkWhiteMateCheck()){
-            blackScores += 100000000;
-        }
-        if (MovementManager.checkBlackMateCheck()){
-            whiteScores +=100000000;
+        if (movementManager.whiteIsInCheck){
+            whiteScores -= 1000;
         }
 
-        whiteScores += whiteCapureSquaresCount * 10 + whiteAtackSquaresCount * 2;
-        blackScores += blackCapureSquaresCount * 10 + blackAtackSquaresCount * 2;
+        if (movementManager.SpieceMoved != 0) {
+            if (movementManager.SpieceMoved >= 7){
+                blackScores += EvaluateBlackMove();
+            }else{
+                whiteScores += EvaluateWhiteMove();
+            }
+        }
 
+        
 
+        whiteScores += whiteCapureSquaresCount * 50 + whiteAtackSquaresCount * 20;
+        blackScores += blackCapureSquaresCount * 50 + blackAtackSquaresCount * 20;
+
+        whiteScores += PawnOverlapScore();
+
+ 
         return whiteScores - blackScores;
     }
 
-    public static void updateBoard(){
+    private void updateBoard(){
         Board.board = 0L;
         Board.board = Board.blackBishops | Board.blackKing | Board.blackKnights | Board.blackPawns | Board.blackQueen | Board.blackRoocks |
         Board.whiteBishops | Board.whiteKing | Board.whiteKnights | Board.whitePawns | Board.whiteQueen | Board.whiteRoocks;
@@ -131,6 +173,18 @@ public class EvaluationFuncion {
         if ((Board.blackKing & mask) != 0L) return 12;
         
         return 0;
+    }
+
+    public static int returnPieceValue(int piece){
+        return switch (piece) {
+            case 1, 7 -> PAWN_VALUE;
+            case 2, 8 -> BISHOP_VALUE;
+            case 3, 9 -> ROOK_VALUE;
+            case 4, 10 -> QUEEN_VALUE;
+            case 5, 11 -> KNIGHT_VALUE;
+            case 6, 12 -> KING_VALUE;
+            default -> 0;
+        };
     }
 
     public static final int[] PAWN_PQT = {
@@ -201,4 +255,76 @@ public class EvaluationFuncion {
     -16, -11,   0,   2,   2,   0, -11, -16,  // Rank 2
     -28, -17, -13,  -2,  -2, -13, -17, -28   // Rank 1
     };
+
+    private void overlapedPawns(int square){
+        whitePawnsPerFile[square % 8]++;
+    }
+
+    private void BoverlapedPawns(int square){
+        blackPawnsPerFile[square % 8]++;
+    }
+
+    private int PawnOverlapScore(){
+        int score = 0;
+        for (int file = 0; file < 8; file++){
+            score += Math.max(0, blackPawnsPerFile[file] - 1) * 25;
+            score -= Math.max(0, whitePawnsPerFile[file] - 1) * 25;
+        }
+
+        return score;
+    }
+
+    private int EvaluateBlackMove(){
+        int pieceMoved = movementManager.SpieceMoved;
+        int pieceMovedPos = movementManager.SpieceMovedPos;
+        boolean isCapture = movementManager.isCapture;
+        int pieceCapured = movementManager.pieceCapured;
+        int score = 0;
+
+        if (((Board.BlackAtackSquares >>> pieceMovedPos )& 1L)==1){
+            score +=2000;
+        }else{
+            score -=20;
+        }
+        if (((Board.whiteAtackSquares >>>  pieceMovedPos)& 1L)==1){
+            score -=2000;
+        }else{
+            score +=40;
+        }
+
+        if (isCapture){
+            score += returnPieceValue(pieceCapured) - returnPieceValue(pieceMoved);
+        }
+
+
+
+        return score;
+    }
+    private int EvaluateWhiteMove(){
+        int pieceMoved = movementManager.SpieceMoved;
+        int pieceMovedPos = movementManager.SpieceMovedPos;
+        boolean isCapture = movementManager.isCapture;
+        int pieceCapured = movementManager.pieceCapured;
+        int score = 0;
+
+        if (((Board.BlackAtackSquares >>> pieceMovedPos )& 1L)==1){
+            score -=2000;
+        }else{
+            score +=20;
+        }
+        if (((Board.whiteAtackSquares >>>  pieceMovedPos)& 1L)==1){
+            score +=2000;
+        }else{
+            score -=40;
+        }
+
+        if (isCapture){
+            score += returnPieceValue(pieceCapured) - returnPieceValue(pieceMoved);
+        }
+
+
+
+
+        return score;
+    }
 }

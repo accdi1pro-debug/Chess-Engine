@@ -43,44 +43,44 @@ public class Main extends JPanel implements ActionListener  {
                 float newY = y -900;
 
                 if ((x>900 || y>900 )||(x<100 ||y<100)){
-                    if (MovementManager.whitePromotionUI){
+                    if (MovementManager.INSTANCE.whitePromotionUI){
                         if (y>900){
                             if (x>300 && x<700){
                                 if (x>600){
-                                    MovementManager.promotionPiece =4;
+                                    MovementManager.INSTANCE.promotionPiece =4;
                                 }else if (x>500){
-                                    MovementManager.promotionPiece =3;
+                                    MovementManager.INSTANCE.promotionPiece =3;
                                 }else if (x>400){
-                                    MovementManager.promotionPiece =2;
+                                    MovementManager.INSTANCE.promotionPiece =2;
                                 }else if (x>300){
-                                    MovementManager.promotionPiece =1;
+                                    MovementManager.INSTANCE.promotionPiece =1;
                                 }
-                                MovementManager.whitePromotion(MovementManager.promotionsquare);
+                                MovementManager.INSTANCE.whitePromotion(MovementManager.INSTANCE.promotionsquare);
                             }
                         }
                     }
-                    if (MovementManager.blackPromotionUI){
+                    if (MovementManager.INSTANCE.blackPromotionUI){
                         if (y<100){
                             if (x>300 && x<700){
                                 if (x>600){
-                                    MovementManager.promotionPiece =4;
+                                    MovementManager.INSTANCE.promotionPiece =4;
                                 }else if (x>500){
-                                    MovementManager.promotionPiece =3;
+                                    MovementManager.INSTANCE.promotionPiece =3;
                                 }else if (x>400){
-                                    MovementManager.promotionPiece =2;
+                                    MovementManager.INSTANCE.promotionPiece =2;
                                 }else if (x>300){
-                                    MovementManager.promotionPiece =1;
+                                    MovementManager.INSTANCE.promotionPiece =1;
                                 }
-                                MovementManager.blackPromotion(MovementManager.promotionsquare);
+                                MovementManager.INSTANCE.blackPromotion(MovementManager.INSTANCE.promotionsquare);
                             }
                         }
                     }
-                    System.out.println(MovementManager.promotionPiece );
-                    if (MovementManager.blackPromotionUI){
+                    System.out.println(MovementManager.INSTANCE.promotionPiece );
+                    if (MovementManager.INSTANCE.blackPromotionUI){
                         
                     }
 
-                }else if (!MovementManager.blackPromotionUI && !MovementManager.whitePromotionUI ){
+                }else if (!MovementManager.INSTANCE.blackPromotionUI && !MovementManager.INSTANCE.whitePromotionUI ){
 
                     int row = (int) Math.floor(-newY/100);
 
@@ -90,8 +90,8 @@ public class Main extends JPanel implements ActionListener  {
                     
 
                     if ((((Board.atackSquares >>> posInAray) & 1L) != 0)) {
-                        MovementManager.movePiece(posInAray);
-                    }else{MovementManager.showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);}
+                        MovementManager.INSTANCE.movePiece(posInAray);
+                    }else{MovementManager.INSTANCE.showAtackSquare(gamePanel.returnPiece(posInAray), posInAray);}
 
                     
                     
@@ -129,13 +129,18 @@ public class Main extends JPanel implements ActionListener  {
             }
         });
 
+        MagicBitBoards.init();
+        MovementManager.INSTANCE.updateWhiteBoard();
+        MovementManager.INSTANCE.updateBlackBoard();
+        MovementManager.INSTANCE.updateBoard();
+
         timer = new Timer(10, this); 
         //test();
         timer.start();
     }
 
     public void handleSpacePressed() {
-        if (!MovementManager.turn){
+        if (!MovementManager.INSTANCE.turn){
             MovesGenerator.generateBlackMoves();
         }
     }
@@ -145,14 +150,14 @@ public class Main extends JPanel implements ActionListener  {
         // Timer tick: update game state if needed and repaint
         repaint();
 
-        if (MovementManager.gameFinished){
+        if (MovementManager.INSTANCE.gameFinished){
             return;
         }
             
-        if (MovementManager.turn && MovementManager.whiteAi){
+        if (MovementManager.INSTANCE.turn && MovementManager.INSTANCE.whiteAi){
             MovesGenerator.play();
 
-        }else if (!MovementManager.turn && MovementManager.BlackAi){
+        }else if (!MovementManager.INSTANCE.turn && MovementManager.INSTANCE.BlackAi){
             MovesGenerator.play();
 
         }
@@ -182,8 +187,6 @@ public class Main extends JPanel implements ActionListener  {
                 }
 
                 if (((Board.checkSquares >>>  araypos) & 1L) != 0){g.setColor(new Color(255,255,0));}
-                //if (Board.BEmpassentSquares[araypos]){g.setColor(new Color(255,0,0));}
-                //if (Board.WEmpassentSquares[araypos]){g.setColor(new Color(255,0,0));}
                 //if (((Board.BlackAtackSquares>>> araypos)& 1L ) == 1){g.setColor(new Color(255,0,0));}
                 //if (Math.floor(araypos %8) != 0){g.setColor(new Color(255,0,0));}
                 g.fillRect(r*100 +100, c *100 +100, 100, 100);
@@ -196,25 +199,20 @@ public class Main extends JPanel implements ActionListener  {
                     g.fillOval(r*100 + 125, c*100 + 125, 50, 50);
                 }
 
-                
-                
-
-
-
                 g.setColor(new Color(0,0,0));
 
                 g.drawString(String.valueOf(araypos), (r ) *100 +100, (c ) * 100 + 200);
             }
         }
 
-        if (MovementManager.blackPromotionUI){
+        if (MovementManager.INSTANCE.blackPromotionUI){
             g.drawImage(blackKnight, 300, 0, 100, 100, this);
             g.drawImage(blackRook, 400, 0, 100, 100, this);
             g.drawImage(blackQueen, 500, 0, 100, 100, this);
             g.drawImage(blackBishop, 600, 0, 100, 100, this);
         }
         
-        if (MovementManager.whitePromotionUI){
+        if (MovementManager.INSTANCE.whitePromotionUI){
             g.drawImage(whiteKnight, 300, 900, 100, 100, this);
             g.drawImage(whiteRook, 400, 900, 100, 100, this);
             g.drawImage(whiteQueen, 500, 900, 100, 100, this);
